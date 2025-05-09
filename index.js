@@ -3,6 +3,9 @@ const ENV = require("./config");
 const {db} = require("./model/index");
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const pinoHttp = require("pino-http");
+const logger = require("./controller/utils/logger.utils");
+
 
 
 const app = express();
@@ -26,6 +29,10 @@ app.use('/img', express.static(path.join(__dirname, 'public/img')));
 // Load swagger
 const setupSwagger = require('./controller/utils/swagger');
 setupSwagger(app);
+
+
+//log http requests
+//app.use(pinoHttp({ logger }));
 
 //Prefix
 app.use('/api/user', userRouter)
@@ -56,6 +63,7 @@ const startServer = async () => {
     //sync db
     await db.sync({force: false})
     console.log(`✅ Database synced successfully`);
+    logger.info("✅  Database synced successfully");
 
 
     app.listen(PORT, () => {
@@ -63,6 +71,8 @@ const startServer = async () => {
     });
   } catch (error) {
     console.log(`Error starting db:`, error.message);
+    logger.info(`Error starting db ${error.message}`);
+
   }
 };
 

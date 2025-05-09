@@ -10,12 +10,13 @@ const mailService = require('./utils/mail')
 const { generateActivationCode } = require('./utils/activationCodeGenerator');
 const generatePasswordService = require('./utils/generatePassword')
 const {PasswordReset} = require('../model')
+const logger = require("./utils/logger.utils");
 
 
 exports.signup = async (req, res, next) => {
+  logger.info("Signup initiated");
   try {
-    console.log("req.file:", req.file);           // 👈 Check if file is present
-    console.log("req.body:", req.body);
+
     //encrypt the password
     const encryptedPassword = await bcrypt.hash(req.body.password, 10);
 
@@ -49,10 +50,10 @@ exports.signup = async (req, res, next) => {
     });
 
     mailService.sendEmail(req.body.first_name, req.body.email, "Account activation", activationCode)
+    logger.info(`New user: ${req.body.email}`);
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    console.error('Signup error:', error); // ✅ This shows full error stack
-
+    logger.error(`Signup error: ${err.message}`);
     next(createError(500, "Error occured during signup", error.message));
   }
 };

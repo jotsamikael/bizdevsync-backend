@@ -10,7 +10,8 @@ const ENV = {
     DATABASE:process.env.DATABASE,
     DIALECT: process.env.DIALECT,
     TOKEN:process.env.TOKEN,
-    PORT_DATABASE: process.env.PORT_DATABASE
+    PORT_DATABASE: process.env.PORT_DATABASE,
+    BETTERSTACK_TOKEN: process.env.BETTERSTACK_TOKEN
 
 }
 
