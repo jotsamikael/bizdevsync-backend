@@ -1,7 +1,5 @@
-const {User} = require('../model')
-const ENV = require('../config')
-const createError = require('../middleware/error')
-
+const {Gateway} = require('../model');
+const createError = require('../middleware/error'); // Assuming you have a custom error creator
 
 // Create a new payment gateway (Admin only)
 exports.createGateway = async (req, res, next) => {
@@ -24,6 +22,39 @@ exports.createGateway = async (req, res, next) => {
   };
   
   // Admin: get all gateways regardless of status
+  /**
+ * @swagger
+ * /gateways:
+ *   get:
+ *     summary: Get all payment gateways (admin only)
+ *     description: Retrieve all configured payment gateways regardless of their status.
+ *     tags: [Gateways]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of all gateways
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   currency:
+ *                     type: string
+ *                   status:
+ *                     type: integer
+ *                     description: 1 = active, 0 = inactive
+ *       401:
+ *         description: Unauthorized (no token)
+ *       403:
+ *         description: Forbidden (not allowed role)
+ */
   exports.getAllGateways = async (req, res, next) => {
     try {
       const gateways = await Gateway.findAll();

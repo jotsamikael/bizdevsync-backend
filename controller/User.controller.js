@@ -8,19 +8,28 @@ const createError = require("../middleware/error");
 const { where } = require("sequelize");
 const mailService = require('./utils/mail')
 const { generateActivationCode } = require('./utils/activationCodeGenerator');
+const generatePasswordService = require('./utils/generatePassword')
+const {PasswordReset} = require('../model')
 
 
 exports.signup = async (req, res, next) => {
   try {
+    console.log("req.file:", req.file);           // 👈 Check if file is present
+    console.log("req.body:", req.body);
     //encrypt the password
     const encryptedPassword = await bcrypt.hash(req.body.password, 10);
 
+    const safeEmail = req.body.email.replace(/[@.]/g, "_");
+
+    const avatarPath = req.file
+      ? `/storage/users/${safeEmail}/${req.file.filename}`
+      : '/img/placeholder.png';
     //create user
     const user = await User.create({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       email: req.body.email,
-      avatar: req.body.avatar,
+      avatar: avatarPath,
       password: encryptedPassword,
       enterprise_id: req.body.enterprise_id,
       is_activated: false,
@@ -90,6 +99,8 @@ exports.signin = async (req, res, next) => {
     const user = await User.findOne({ where: { email: req.body.email } });
 
     if (!user) return next(createError(404, "User doesn't exist"));
+    if (user.is_activated == false) return next(createError(404, "User Account not activated"));
+
 
     //verify password
     const comparePassword = await bcrypt.compare(
@@ -100,7 +111,8 @@ exports.signin = async (req, res, next) => {
     if (!comparePassword) return next(createError(400, "Wrong password"));
 
     //generate auth token
-    const token = jwt.sign({ id: user.id }, ENV.TOKEN, { expiresIn: "24h" });
+    const token = jwt.sign({ id: user.id, role:user.role, email:user.email, will_expire: user.will_expire
+    }, ENV.TOKEN, { expiresIn: "24h" });
 
     //send user dto excluding password
     const { password, ...userData } = user.dataValues;
@@ -213,3 +225,34 @@ exports.getSaasAtaff = async (req, res, next) => {
     next(createError(500, "Error retrieving admin/operator/superadmin users"));
   }
 };
+
+
+/**PASSWORD RESET */
+exports.resetPassword = async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) return  next(createError(404, `User with email ${email} doesn't exist`));
+
+    const newPassword = generatePasswordService.generateSecurePassword();
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update user password
+    await user.update({ password: hashedPassword });
+
+    // Log in password_resets table
+    await PasswordReset.create({
+      email,
+      new_password: hashedPassword,
+    });
+
+    // Send new password via email
+   mailService.sendEmail('BizdevSync',email,'Your New Password for BizdevSync',`Hello,\n\nYour new password is: ${newPassword}\n\nPlease log in and change it immediately.\n\nBest,\nThe BizdevSync Team`)
+
+    res.status(200).json({ message: 'New password sent to your email.' });
+  } catch (err) {
+    console.error(err);
+    next(createError(500, "Error resetting password"));
+  }
+};
+

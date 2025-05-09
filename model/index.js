@@ -16,6 +16,10 @@ const ContactHasMeeting = require('./ContactHasMeeting.model');
 const Product = require('./Product.model');
 const ProductCategory = require('./ProductCategory');
 const Country = require('./Country.model');
+const Plan = require('./Plan.model.js')
+const Order = require('./Oder.model.js')
+const Gateway = require('./Gateway.model.js')
+const PasswordReset = require('./ResetPassword.model.js')
 
 
 // ===============
@@ -153,6 +157,17 @@ ProductCategory.hasMany(Product, { foreignKey: 'ProductCategory_idProductCategor
 Product.belongsTo(User, { foreignKey: 'User_idUser' });
 User.hasMany(Product, { foreignKey: 'User_idUser' });
 
+// Subscription and Orders
+User.belongsTo(Plan, { foreignKey: 'plan_id' });
+Order.belongsTo(User, { foreignKey: 'user_id' });
+Order.belongsTo(Gateway, { foreignKey: 'gateway_id' });
+Order.belongsTo(Plan, { foreignKey: 'plan_id' });
+
+User.hasMany(Order, { foreignKey: 'user_id' });
+Plan.hasMany(Order, { foreignKey: 'plan_id' });
+Gateway.hasMany(Order, { foreignKey: 'gateway_id' });
+
+
 
 module.exports ={
     db,
@@ -170,6 +185,10 @@ CompetitorHasBusiness,
 ContactHasMeeting,
 Product,
 ProductCategory,
-Country 
+Country,
+Gateway,
+Plan,
+Order,
+PasswordReset 
 
 }

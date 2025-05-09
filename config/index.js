@@ -12,7 +12,6 @@ const ENV = {
     TOKEN:process.env.TOKEN,
     PORT_DATABASE: process.env.PORT_DATABASE
 
-
 }
 
 module.exports = ENV;

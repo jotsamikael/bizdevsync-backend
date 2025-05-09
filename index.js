@@ -1,20 +1,39 @@
 const express = require("express");
 const ENV = require("./config");
 const {db} = require("./model/index");
+const cookieParser = require('cookie-parser');
+const path = require('path');
+
 
 const app = express();
 
 //import routes
 const userRouter = require('./router/User.router')
+const planRouter =  require('./router/Plan.router');
+const gatewayRouter = require('./router/Gateway.router');
+const orderRouter = require('./router/Order.router');
+
 
 //port
 const PORT = ENV.PORT || 8889;
 
-//Middleware
 app.use(express.json())
+app.use(cookieParser());
+app.use('/storage', express.static(path.join(__dirname, 'storage')));
+app.use('/img', express.static(path.join(__dirname, 'public/img')));
+
+
+// Load swagger
+const setupSwagger = require('./controller/utils/swagger');
+setupSwagger(app);
 
 //Prefix
 app.use('/api/user', userRouter)
+app.use('/api/plans', planRouter);
+app.use('/api/gateways', gatewayRouter);
+app.use('/api/orders', orderRouter);
+
+
 
 //Error handeling middleware
 app.use((err,req,res,next)=>{

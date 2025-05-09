@@ -44,6 +44,10 @@ const User = db.define('User',{
         validate:{
             isIn:[['user','solo_biz_dev','enterprise_admin','admin','operator']]
         }
+    },
+    will_expire: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 
 },{

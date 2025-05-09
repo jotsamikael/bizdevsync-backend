@@ -32,16 +32,14 @@ Edit
 git clone https://github.com/your-org/bizdevsync-backend.git
 cd bizdevsync-backend
 2. Install Dependencies
-bash
-Copy
-Edit
 npm install
+
 3. Create .env File
 Create a .env in the root with:
 
 env
 Copy
-Edit
+
 PORT=8885
 DATABASE=bizdevsync
 USER=root
@@ -57,20 +55,25 @@ EMAIL_PASS=xxxxxxx
 bash
 Copy
 Edit
-npm run dev
+npm start
 Server runs on:
 👉 http://localhost:8885
 
 ✅ Features
-🔐 JWT-based Authentication (Signup/Login)
+🔐 JWT-based Authentication (Signup/Login) ✅
+    Image upload on signup ✅
 
-📩 Account Activation via Email (4-digit code)
+📩 Account Activation via Email (4-digit code) ✅
 
-🧑‍💼 Role-based Access (solo biz dev, enterprise admin, operator)
+🧑‍💼 Role-based Access (solo biz dev, enterprise admin, operator) ✅
 
-📊 Lead, Business, Follow-up Management
+🔄 Pagination, Filtering, Error handling ✅
+    Password reset feature ✅
+    Subscription Plans ✅
+    Order plan ✅
+    Subscription expiry ✅
 
-🔄 Pagination, Filtering, Error handling
+📊 Lead, Business, Follow-up Management ... coming soon
 
 🌍 Country & Product Category support
 
@@ -105,7 +108,7 @@ GET	/leads, /business	Business resources
 
 📦 Swagger API documentation
 
-⏳ Cron jobs to expire unused activation codes
+⏳ Cron jobs to expire unused activation codes 
 
 🛎️ Notifications & email templates
 
