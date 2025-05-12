@@ -1,8 +1,8 @@
 const {DataTypes} = require('sequelize')
 const db = require('../config/db')
 
- const ProductCategory = db.define('ProductCategory', {
-  idProductCategory: {
+ const Region = db.define('Region', {
+  idRegion: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
@@ -17,7 +17,8 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'ProductCategory',
+  tableName: 'regions',
   timestamps: false,
 });
-module.exports = ProductCategory
+
+module.exports = Region

@@ -14,6 +14,11 @@ const db = require('../config/db')
   code: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  is_archived: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, {
   tableName: 'Country',

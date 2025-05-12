@@ -5,14 +5,27 @@ const fs = require('fs');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const email = req.body.email;
-    if (!email) return cb(new Error('Email is required to determine storage path'));
+    const name = req.body.name;
 
-    const safeEmail = email.replace(/[@.]/g, "_");
-    const folder = path.join(__dirname, '..', '..', 'storage', 'users', safeEmail);
+    if (!email && !name) return cb(new Error('Email or Name is required to determine storage path'));
 
-    if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+    if(!name){
+      const safeEmail = email.replace(/[@.]/g, "_");
+      const folder = path.join(__dirname, '..', '..', 'storage', 'users', safeEmail);
+      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
 
     cb(null, folder);
+  
+    }
+    if(!email){
+      const safeName = name.replace(/[@.\s]/g, "_");
+
+      const folder = path.join(__dirname, '..', '..', 'storage', 'users', safeName);
+      if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+
+      cb(null, folder);
+    }
+  
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);

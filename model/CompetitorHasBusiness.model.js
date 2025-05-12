@@ -6,7 +6,12 @@ const db = require('../config/db')
   Business_idBusiness: { type: DataTypes.INTEGER },
   weaknesses: { type: DataTypes.STRING },
   strengths: { type: DataTypes.STRING },
-  risk_level: { type: DataTypes.STRING }
+  risk_level: { type: DataTypes.STRING },
+  is_archived: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  }
 }, {
   tableName: 'Competitor_has_Business',
   timestamps: false,

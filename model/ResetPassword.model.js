@@ -8,6 +8,11 @@ const PasswordResets = db.define('PasswordResets', {
     type: DataTypes.STRING,
     allowNull: false
 },
+is_archived: {
+  type: DataTypes.BOOLEAN,
+  allowNull: false,
+  defaultValue: false
+}
 }, {
   tableName: 'password_resets',
   timestamps: false

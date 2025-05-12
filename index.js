@@ -12,9 +12,24 @@ const app = express();
 
 //import routes
 const userRouter = require('./router/User.router')
+const leadRouter = require('./router/Lead.router');
+
 const planRouter =  require('./router/Plan.router');
 const gatewayRouter = require('./router/Gateway.router');
 const orderRouter = require('./router/Order.router');
+const ProductCategoryRouter =  require('./router/ProductCategory.router');
+const ProductRouter =  require('./router/Product.router');
+const EnterpriseRouter =  require('./router/Enterprise.router');
+const ContactRouter =  require('./router/Contact.router');
+const MeetingRouter =  require('./router/Meeting.router');
+const ActivityRouter =  require('./router/Activity.router');
+const FollowupRouter =  require('./router/Followup.router');
+
+
+
+
+
+
 
 
 //port
@@ -39,6 +54,22 @@ app.use('/api/user', userRouter)
 app.use('/api/plans', planRouter);
 app.use('/api/gateways', gatewayRouter);
 app.use('/api/orders', orderRouter);
+app.use('/api/leads', leadRouter);
+app.use('/api/productCategories', ProductCategoryRouter);
+
+app.use('/api/products', ProductRouter);
+app.use('/api/enterprises', EnterpriseRouter);
+app.use('/api/contacts', ContactRouter);
+
+app.use('/api/meetings', MeetingRouter);
+app.use('/api/activities', ActivityRouter);
+app.use('/api/followups', FollowupRouter);
+
+
+
+
+
+
 
 
 

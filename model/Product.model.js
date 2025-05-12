@@ -18,6 +18,11 @@ const db = require('../config/db')
   description: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  is_archived: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, {
   tableName: 'Product',

@@ -13,7 +13,12 @@ const Order = db.define('Order', {
   will_expire: { type: DataTypes.DATE },
   meta: { type: DataTypes.TEXT },
   created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-  updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+  updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  is_archived: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  }
 }, {
   tableName: 'orders',
   timestamps: false 

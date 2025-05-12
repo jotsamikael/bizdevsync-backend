@@ -15,7 +15,12 @@ const db = require('../config/db')
   previous_vc: { type: DataTypes.STRING },
   turnover_signable: { type: DataTypes.STRING },
   notes: { type: DataTypes.STRING },
-  closed_date: { type: DataTypes.DATE }
+  closed_date: { type: DataTypes.DATE },
+  is_archived: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  }
 }, {
   tableName: 'Business',
   timestamps: false,

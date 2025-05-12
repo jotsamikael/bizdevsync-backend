@@ -4,16 +4,12 @@ const db = require('../config/db')
 
 //Define model using sequelize
 const Lead = db.define('Lead',{
-    assignedToUser:{
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     name:{
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    descrption:{
+    description:{
         type: DataTypes.TEXT,
         allowNull: false
     },
@@ -21,10 +17,6 @@ const Lead = db.define('Lead',{
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'placeholder'
-    },
-    country:{
-        type: DataTypes.STRING,
-        allowNull: false
     },
     activitySector:{
         type: DataTypes.STRING,
@@ -34,9 +26,15 @@ const Lead = db.define('Lead',{
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue:false
-    } 
+    },
+    is_archived: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      }   
+},
 
-},{
+{
     timeTemps:true, //add the created date and updated date
     underscored: true //enables snake case
 })

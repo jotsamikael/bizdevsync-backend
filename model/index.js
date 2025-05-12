@@ -16,10 +16,25 @@ const ContactHasMeeting = require('./ContactHasMeeting.model');
 const Product = require('./Product.model');
 const ProductCategory = require('./ProductCategory');
 const Country = require('./Country.model');
+const Region = require('./Region.model.js');
 const Plan = require('./Plan.model.js')
 const Order = require('./Oder.model.js')
 const Gateway = require('./Gateway.model.js')
 const PasswordReset = require('./ResetPassword.model.js')
+
+
+// ===============
+// Enterprise Relationships
+// ===============
+Enterprise.belongsTo(Country,{foreignKey:'Country_idCountry'})
+Country.hasMany(Enterprise,{foreignKey:'Country_idCountry'})
+
+
+// ===============
+// Country Relationships
+// ===============
+Country.belongsTo(Region,{foreignKey: 'Region_idRegion'});
+Region.hasMany(Country,{foreignKey: 'Region_idRegion'})
 
 
 // ===============
@@ -88,14 +103,6 @@ Meeting.belongsTo(Followup, { foreignKey: 'Followup_idFollowup' });
 // Business is created from Lead
 Business.belongsTo(Lead, { foreignKey: 'Lead_idLead' });
 Lead.hasOne(Business, { foreignKey: 'Lead_idLead' });
-
-// Business belongs to Enterprise
-Business.belongsTo(Enterprise, { foreignKey: 'Enterprise_idEnterprise' });
-Enterprise.hasMany(Business, { foreignKey: 'Enterprise_idEnterprise' });
-
-// Business belongs to Country
-Business.belongsTo(Country, { foreignKey: 'Country_idCountry' });
-Country.hasMany(Business, { foreignKey: 'Country_idCountry' });
 
 // Business belongs to User (creator/owner)
 Business.belongsTo(User, { foreignKey: 'created_by_user_id' });

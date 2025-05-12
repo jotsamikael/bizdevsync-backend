@@ -13,7 +13,12 @@ const Plan = db.define('Plan', {
   days: { type: DataTypes.INTEGER },
   trial_days: { type: DataTypes.INTEGER },
   created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-  updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+  updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  is_archived: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  }
 }, {
   tableName: 'plans',
   timestamps: false

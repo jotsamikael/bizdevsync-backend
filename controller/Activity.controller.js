@@ -1,62 +1,160 @@
-const {User} = require('../model')
-const ENV = require('../config')
-const createError = require('../middleware/error')
+const { Activity, Followup } = require('../model');
+const createError = require('../middleware/error');
+const { paginate } = require('./utils/paginate');
+
+/**
+ * CRUD functions with swagger documentation
+ */
+/**
+ * @swagger
+ * /activities:
+ *   post:
+ *     summary: Create a new activity
+ *     tags: [Activities]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Activity'
+ *     responses:
+ *       201:
+ *         description: Activity created
+ */
+exports.createActivity = async (req, res, next) => {
+  try {
+    const activity = await Activity.create(req.body);
+    res.status(201).json({ message: 'Activity created', data: activity });
+  } catch (error) {
+    next(createError(500, 'Create activity error', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /activities:
+ *   get:
+ *     summary: Get all activities (paginated)
+ *     tags: [Activities]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: List of activities
+ */
+exports.getAllActivities = async (req, res, next) => {
+  try {
+    const { limit, offset } = paginate(req);
+    const activities = await Activity.findAndCountAll({
+      where: { is_archived: false },
+      include: [Followup],
+      limit,
+      offset
+    });
+    res.status(200).json(activities);
+  } catch (error) {
+    next(createError(500, 'Fetch activities error', error.message));
+  }
+};
 
 
-// Create a new payment gateway (Admin only)
-exports.createGateway = async (req, res, next) => {
-    try {
-      const gateway = await Gateway.create(req.body);
-      res.status(201).json({ message: 'Gateway created successfully', data: gateway });
-    } catch (error) {
-      next(createError(500, 'Failed to create gateway', error.message));
-    }
-  };
-  
-  // Get all active gateways (visible to users)
-  exports.getActiveGateways = async (req, res, next) => {
-    try {
-      const gateways = await Gateway.findAll({ where: { status: 1 } });
-      res.status(200).json(gateways);
-    } catch (error) {
-      next(createError(500, 'Failed to retrieve gateways', error.message));
-    }
-  };
-  
-  // Admin: get all gateways regardless of status
-  exports.getAllGateways = async (req, res, next) => {
-    try {
-      const gateways = await Gateway.findAll();
-      res.status(200).json(gateways);
-    } catch (error) {
-      next(createError(500, 'Failed to retrieve gateways', error.message));
-    }
-  };
-  
-  // Update a specific gateway
-  exports.updateGateway = async (req, res, next) => {
-    const { id } = req.params;
-    try {
-      const gateway = await Gateway.findByPk(id);
-      if (!gateway) return next(createError(404, 'Gateway not found'));
-  
-      await gateway.update(req.body);
-      res.status(200).json({ message: 'Gateway updated successfully', data: gateway });
-    } catch (error) {
-      next(createError(500, 'Failed to update gateway', error.message));
-    }
-  };
-  
-  // Soft delete a gateway (status = 0)
-  exports.deleteGateway = async (req, res, next) => {
-    const { id } = req.params;
-    try {
-      const gateway = await Gateway.findByPk(id);
-      if (!gateway) return next(createError(404, 'Gateway not found'));
-  
-      await gateway.update({ status: 0 });
-      res.status(200).json({ message: 'Gateway deleted (soft) successfully' });
-    } catch (error) {
-      next(createError(500, 'Failed to delete gateway', error.message));
-    }
-  };
+/**
+ * @swagger
+ * /activities/{id}:
+ *   get:
+ *     summary: Get an activity by ID
+ *     tags: [Activities]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Activity details
+ */
+exports.getActivityById = async (req, res, next) => {
+  try {
+    const activity = await Activity.findOne({
+      where: { idActivity: req.params.id, is_archived: false },
+      include: [Followup]
+    });
+    if (!activity) return next(createError(404, 'Activity not found'));
+    res.status(200).json(activity);
+  } catch (error) {
+    next(createError(500, 'Get activity error', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /activities/{id}:
+ *   put:
+ *     summary: Update an activity
+ *     tags: [Activities]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Activity'
+ *     responses:
+ *       200:
+ *         description: Activity updated
+ */
+exports.updateActivity = async (req, res, next) => {
+  try {
+    await Activity.update(req.body, {
+      where: { idActivity: req.params.id, is_archived: false }
+    });
+    res.status(200).json({ message: 'Activity updated' });
+  } catch (error) {
+    next(createError(500, 'Update activity error', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /activities/{id}:
+ *   delete:
+ *     summary: Archive an activity
+ *     tags: [Activities]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Activity archived
+ */
+exports.archiveActivity = async (req, res, next) => {
+  try {
+    await Activity.update({ is_archived: true }, {
+      where: { idActivity: req.params.id }
+    });
+    res.status(200).json({ message: 'Activity archived' });
+  } catch (error) {
+    next(createError(500, 'Archive activity error', error.message));
+  }
+};

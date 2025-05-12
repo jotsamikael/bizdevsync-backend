@@ -48,7 +48,12 @@ const User = db.define('User',{
     will_expire: {
         type: DataTypes.DATE,
         allowNull: true
-    }
+    },
+    is_archived: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      }
 
 },{
     timeTemps:true, //add the created date and updated date

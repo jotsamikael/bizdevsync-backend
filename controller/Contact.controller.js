@@ -1,3 +1,187 @@
-const {User} = require('../model')
-const ENV = require('../config')
-const createError = require('../middleware/error')
+const { Contact, Lead, Country } = require('../model');
+const createError = require('../middleware/error');
+const logger = require('./utils/logger.utils');
+
+/**
+ * @swagger
+ * /contacts:
+ *   post:
+ *     summary: Create a new contact
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               assignedToUser: { type: integer }
+ *               first_name: { type: string }
+ *               last_name: { type: string }
+ *               email: { type: string }
+ *               phone: { type: string }
+ *               weight: { type: number }
+ *               position: { type: string }
+ *               language: { type: object }
+ *               notes: { type: string }
+ *               Lead_idLead: { type: integer }
+ *               Country_idCountry: { type: integer }
+ *     responses:
+ *       201:
+ *         description: Contact created
+ */
+exports.createContact = async (req, res, next) => {
+  try {
+    const contact = await Contact.create({
+      ...req.body
+    });
+
+    res.status(201).json({ message: 'Contact created successfully', data: contact });
+    logger.info(`Contact created: ${contact.first_name} ${contact.last_name}`);
+  } catch (error) {
+    logger.error(`Contact creation error: ${error.message}`);
+    next(createError(500, 'Error creating contact', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /contacts:
+ *   get:
+ *     summary: Get all contacts (paginated)
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: List of contacts
+ */
+exports.getAllContacts = async (req, res, next) => {
+  try {
+    const { limit, offset } = require("./utils/paginate").paginate(req);
+    const contacts = await Contact.findAndCountAll({
+      where: { is_archived: false },
+      limit,
+      offset,
+      include: [Lead, Country]
+    });
+
+    res.status(200).json(contacts);
+  } catch (error) {
+    logger.error(`Fetch contacts error: ${error.message}`);
+    next(createError(500, 'Error fetching contacts', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   get:
+ *     summary: Get contact by ID
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Contact detail
+ */
+exports.getContactById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const contact = await Contact.findOne({
+      where: { id, is_archived: false },
+      include: [Lead, Country]
+    });
+
+    if (!contact) {
+      return next(createError(404, 'Contact not found'));
+    }
+
+    res.status(200).json(contact);
+  } catch (error) {
+    logger.error(`Fetch contact error: ${error.message}`);
+    next(createError(500, 'Error fetching contact', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   put:
+ *     summary: Update a contact
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Contact updated
+ */
+exports.updateContact = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const updated = await Contact.update(req.body, {
+      where: { id, is_archived: false }
+    });
+
+    res.status(200).json({ message: 'Contact updated successfully', data: updated });
+  } catch (error) {
+    logger.error(`Contact update error: ${error.message}`);
+    next(createError(500, 'Error updating contact', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /contacts/{id}:
+ *   delete:
+ *     summary: Archive a contact (soft delete)
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Contact archived
+ */
+exports.archiveContact = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    await Contact.update({ is_archived: true }, {
+      where: { id }
+    });
+
+    res.status(200).json({ message: 'Contact archived successfully' });
+  } catch (error) {
+    logger.error(`Archive contact error: ${error.message}`);
+    next(createError(500, 'Error archiving contact', error.message));
+  }
+};
