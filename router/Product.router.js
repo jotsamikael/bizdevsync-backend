@@ -12,5 +12,6 @@ router.post('/products', authMiddleware, requireRole(allowedRoles), validate(Cre
 router.get('/products', authMiddleware, requireRole(allowedRoles), controller.getAllProducts);
 router.put('/products/:id', authMiddleware, requireRole(allowedRoles), controller.updateProduct);
 router.delete('/products/:id', authMiddleware, requireRole(allowedRoles), controller.archiveProduct);
+router.get('/products/product-categories/:categoryId', controller.getProductsByCategoryId);
 
 module.exports = router;

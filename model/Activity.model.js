@@ -7,6 +7,10 @@ const db = require('../config/db')
   last_action: { type: DataTypes.STRING },
   last_action_date: { type: DataTypes.STRING },
   next_action: { type: DataTypes.STRING },
+  next_action_date: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   is_archived: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

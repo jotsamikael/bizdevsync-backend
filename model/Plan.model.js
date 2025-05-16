@@ -12,6 +12,7 @@ const Plan = db.define('Plan', {
   status: { type: DataTypes.INTEGER, defaultValue: 1 },
   days: { type: DataTypes.INTEGER },
   trial_days: { type: DataTypes.INTEGER },
+  data:{type: DataTypes.STRING,allowNull: false},
   created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   is_archived: {

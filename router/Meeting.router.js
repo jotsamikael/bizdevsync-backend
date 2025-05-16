@@ -14,4 +14,7 @@ router.get('/meetings/:id', authMiddleware, requireRole(allowedRoles), controlle
 router.put('/meetings/:id', authMiddleware, requireRole(allowedRoles), controller.updateMeeting);
 router.delete('/meetings/:id', authMiddleware, requireRole(allowedRoles), controller.archiveMeeting);
 
+router.get('/meetings/followups/:followupId', controller.getMeetingsByFollowupId);
+router.get('/meetings/businesses/:businessId', controller.getMeetingsByBusinessId);
+
 module.exports = router;

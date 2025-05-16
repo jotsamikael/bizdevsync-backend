@@ -175,3 +175,47 @@ exports.archiveProduct = async (req, res, next) => {
     next(createError(500, "Error archiving product", error.message));
   }
 };
+
+
+/**
+ * @swagger
+ * /products/product-categories/{categoryId}:
+ *   get:
+ *     summary: Get paginated products for a category
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: categoryId
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Paginated list of products
+ */
+exports.getProductsByCategoryId = async (req, res, next) => {
+  try {
+    const { categoryId } = req.params;
+    const { limit, offset } = require('./utils/paginate').paginate(req);
+
+    const products = await Product.findAndCountAll({
+      where: {
+        ProductCategory_idProductCategory: categoryId,
+        is_archived: false
+      },
+      limit,
+      offset
+    });
+
+    res.status(200).json(products);
+  } catch (error) {
+    next(createError(500, 'Error fetching products by category', error.message));
+  }
+};

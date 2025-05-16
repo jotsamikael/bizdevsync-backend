@@ -14,4 +14,8 @@ router.get('/followups/:id', authMiddleware, requireRole(allowedRoles), controll
 router.put('/followups/:id', authMiddleware, requireRole(allowedRoles), controller.updateFollowup);
 router.delete('/followups/:id', authMiddleware, requireRole(allowedRoles), controller.archiveFollowup);
 
+
+router.get('/followups/:followupId/next-action', authMiddleware, requireRole(allowedRoles), controller.getNextActionForFollowup);
+router.get('/followups/:followupId/overdue-actions', authMiddleware, requireRole(allowedRoles), controller.getOverdueActionsForFollowup);
+
 module.exports = router;

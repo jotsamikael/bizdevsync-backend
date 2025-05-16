@@ -72,7 +72,21 @@ exports.getAllContacts = async (req, res, next) => {
       where: { is_archived: false },
       limit,
       offset,
-      include: [Lead, Country]
+      include: [
+        {
+          model: Lead,
+          required: true,
+          where: {
+            [db.Sequelize.Op.or]: [
+              { created_by_user_id: req.user.id },
+              { assigned_to_user_id: req.user.id }
+            ]
+          }
+        },
+        {
+          model: Country
+        }
+      ]
     });
 
     res.status(200).json(contacts);
@@ -82,6 +96,72 @@ exports.getAllContacts = async (req, res, next) => {
   }
 };
 
+/**
+ * @swagger
+ * /get-contacts-by-lead/{leadId}:
+ *   get:
+ *     summary: Get all contacts for a specific lead
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: leadId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the Lead
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: List of contacts for the specified lead
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Contact'
+ *       500:
+ *         description: Error fetching contacts
+ */
+exports.getContactsByLead = async (req, res, next) => {
+  try {
+    const { limit, offset } = paginate(req);
+    const { leadId } = req.params;
+
+    const contacts = await Contact.findAndCountAll({
+      where: {
+        is_archived: false,
+        Lead_idLead: leadId
+      },
+      limit,
+      offset,
+      include: [
+        { model: Lead }, // optional if you want lead data
+        { model: Country }
+      ]
+    });
+
+    res.status(200).json(contacts);
+  } catch (error) {
+    logger.error(`Fetch contacts by lead error: ${error.message}`);
+    next(createError(500, 'Error fetching contacts for this lead', error.message));
+  }
+};
 /**
  * @swagger
  * /contacts/{id}:
@@ -185,3 +265,50 @@ exports.archiveContact = async (req, res, next) => {
     next(createError(500, 'Error archiving contact', error.message));
   }
 };
+
+
+
+/**
+ * @swagger
+ * /contacts/meetings/{meetingId}:
+ *   get:
+ *     summary: Get paginated contacts linked to a meeting
+ *     tags: [ContactHasMeeting]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: meetingId
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Paginated list of contacts
+ */
+exports.getContactsByMeetingId = async (req, res, next) => {
+  try {
+    const { meetingId } = req.params;
+    const { limit, offset } = require('./utils/paginate').paginate(req);
+
+    const links = await ContactHasMeeting.findAndCountAll({
+      where: { meeting_idMeeting: meetingId, is_archived: false },
+      limit,
+      offset,
+      include: [Contact]
+    });
+
+    res.status(200).json({
+      count: links.count,
+      rows: links.rows.map(link => link.Contact)
+    });
+  } catch (error) {
+    next(createError(500, 'Error fetching contacts by meeting', error.message));
+  }
+};
+

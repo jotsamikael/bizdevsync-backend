@@ -24,12 +24,9 @@ const ContactRouter =  require('./router/Contact.router');
 const MeetingRouter =  require('./router/Meeting.router');
 const ActivityRouter =  require('./router/Activity.router');
 const FollowupRouter =  require('./router/Followup.router');
-
-
-
-
-
-
+const CompetitorRouter =  require('./router/Competitor.router');
+const BusinessHasCompetitorRouter =  require('./router/BusinessHasCompetitor.router');
+const ContactHasMeetingRouter =  require('./router/ContactHasMeeting.router');
 
 
 //port
@@ -64,6 +61,11 @@ app.use('/api/contacts', ContactRouter);
 app.use('/api/meetings', MeetingRouter);
 app.use('/api/activities', ActivityRouter);
 app.use('/api/followups', FollowupRouter);
+app.use('/api/competitors', CompetitorRouter);
+app.use('/api/business-has-competitors', BusinessHasCompetitorRouter);
+app.use('/api/contact-has-meeting', ContactHasMeetingRouter);
+
+
 
 
 

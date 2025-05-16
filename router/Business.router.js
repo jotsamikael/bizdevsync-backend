@@ -14,4 +14,8 @@ router.get('/businesses/:id', authMiddleware, requireRole(allowedRoles), control
 router.put('/businesses/:id', authMiddleware, requireRole(allowedRoles), controller.updateBusiness);
 router.delete('/businesses/:id', authMiddleware, requireRole(allowedRoles), controller.archiveBusiness);
 
+router.get('/businesses/:businessId/next-action', authMiddleware, requireRole(allowedRoles), controller.getNextActionForBusiness);
+router.get('/businesses/:businessId/overdue-actions', authMiddleware, requireRole(allowedRoles), controller.getOverdueActionsForBusiness);
+
+
 module.exports = router;

@@ -27,6 +27,7 @@ const Lead = db.define('Lead',{
         allowNull: false,
         defaultValue:false
     },
+
     is_archived: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

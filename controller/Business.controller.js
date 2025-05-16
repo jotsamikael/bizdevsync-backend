@@ -92,7 +92,17 @@ exports.getBusinessById = async (req, res, next) => {
   try {
     const business = await Business.findOne({
       where: { idBusiness: req.params.id, is_archived: false },
-      include: [Lead, Activity, Meeting]
+      include: [  {
+          model: Lead,
+          required: true,
+          where: {
+            [db.Sequelize.Op.or]: [
+              { created_by_user_id: req.user.id },
+              { assigned_to_user_id: req.user.id }
+            ]
+          }
+        }, {model:Activity},
+         {model:Meeting}]
     });
     if (!business) return next(createError(404, 'Business not found'));
     res.status(200).json(business);
@@ -160,5 +170,106 @@ exports.archiveBusiness = async (req, res, next) => {
     res.status(200).json({ message: 'Business archived successfully' });
   } catch (error) {
     next(createError(500, 'Could not archive business', error.message));
+  }
+};
+
+
+/**
+ * @swagger
+ * /businesses/{businessId}/next-action:
+ *   get:
+ *     summary: Get next scheduled action (activity/meeting) for a business
+ *     tags: [Businesses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: businessId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Business ID
+ *     responses:
+ *       200:
+ *         description: Next action (activity or meeting) for the business
+ */
+exports.getNextActionForBusiness = async (req, res, next) => {
+  try {
+    const { businessId } = req.params;
+
+    const nextActivity = await Activity.findOne({
+      where: {
+        Business_idBusiness: businessId,
+        next_action_date: { [db.Sequelize.Op.gt]: new Date() },
+        is_archived: false
+      },
+      order: [['next_action_date', 'ASC']]
+    });
+
+    const nextMeeting = await Meeting.findOne({
+      where: {
+        Business_idBusiness: businessId,
+        next_action_date: { [db.Sequelize.Op.gt]: new Date() },
+        is_archived: false
+      },
+      order: [['next_action_date', 'ASC']]
+    });
+
+    const nextAction = [nextActivity, nextMeeting]
+      .filter(Boolean)
+      .sort((a, b) => new Date(a.next_action_date) - new Date(b.next_action_date))[0];
+
+    res.status(200).json(nextAction || { message: 'No upcoming actions' });
+  } catch (error) {
+    next(createError(500, 'Error fetching next action for business', error.message));
+  }
+};
+
+
+/**
+ * @swagger
+ * /businesses/{businessId}/overdue-actions:
+ *   get:
+ *     summary: Get overdue actions (activity/meeting) for a business
+ *     tags: [Businesses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: businessId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Business ID
+ *     responses:
+ *       200:
+ *         description: List of overdue activities and meetings for the business
+ */
+exports.getOverdueActionsForBusiness = async (req, res, next) => {
+  try {
+    const { businessId } = req.params;
+
+    const overdueActivities = await Activity.findAll({
+      where: {
+        Business_idBusiness: businessId,
+        next_action_date: { [db.Sequelize.Op.lt]: new Date() },
+        is_archived: false
+      }
+    });
+
+    const overdueMeetings = await Meeting.findAll({
+      where: {
+        Business_idBusiness: businessId,
+        next_action_date: { [db.Sequelize.Op.lt]: new Date() },
+        is_archived: false
+      }
+    });
+
+    res.status(200).json({
+      overdue_activities: overdueActivities,
+      overdue_meetings: overdueMeetings
+    });
+  } catch (error) {
+    next(createError(500, 'Error fetching overdue actions for business', error.message));
   }
 };

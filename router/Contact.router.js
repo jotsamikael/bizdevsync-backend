@@ -9,9 +9,13 @@ const requireRole = require('../middleware/autorisationMiddleware');
 const allowedRoles = ['enterprise_admin', 'solo_biz_dev'];
 
 router.post('/contacts', authMiddleware, requireRole(allowedRoles), validate(CreateContactSchema), controller.createContact);
+router.get('/get-contacts-by-lead/:leadId', authMiddleware, requireRole(allowedRoles), controller.getContactsByLead);
 router.get('/contacts', authMiddleware, requireRole(allowedRoles), controller.getAllContacts);
 router.get('/contacts/:id', authMiddleware, requireRole(allowedRoles), controller.getContactById);
 router.put('/contacts/:id', authMiddleware, requireRole(allowedRoles), controller.updateContact);
 router.delete('/contacts/:id', authMiddleware, requireRole(allowedRoles), controller.archiveContact);
+
+router.get('/contacts/meetings/:meetingId', controller.getContactsByMeetingId);
+
 
 module.exports = router;
