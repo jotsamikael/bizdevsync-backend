@@ -13,6 +13,39 @@ const {PasswordReset} = require('../model')
 const logger = require("./utils/logger.utils");
 
 
+/**
+ * @swagger
+ * /user/register:
+ *   post:
+ *     summary: Register a new user (solo biz dev by default)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - first_name
+ *               - last_name
+ *               - email
+ *               - password
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ */
 exports.signup = async (req, res, next) => {
   logger.info("Signup initiated");
   try {
@@ -59,14 +92,44 @@ exports.signup = async (req, res, next) => {
 };
 
 /** ACTIVATE ACCOUNT */
+/**
+ * @swagger
+ * /user/activate-account:
+ *   post:
+ *     summary: Activate user account with code
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
+ *             properties:
+ *               email:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Account activated successfully
+ */
 exports.activateAccount = async (req, res, next) => {
     const { email, code } = req.body;
+      logger.info(`Activate account initiated for user with email ${email}`);
+
   
     try {
         //get user by email
       const user = await User.findOne({ where: { email: email.trim().toLowerCase() } });
-      if (!user) return next(createError(404, "User not found"));
-  
+      if (!user) {
+        logger.error(`Activate account Failed. No for user with email ${email} Found`);
+
+        return next(createError(404, "User not found"));
+      }
+        
       //get activation code by userId
       const activation = await Activation.findOne({
         where: {
@@ -76,31 +139,71 @@ exports.activateAccount = async (req, res, next) => {
         }
       });
   
-      if (!activation) return next(createError(400, "Invalid or expired code"));
+      if (!activation){
+      logger.error(`Activate account Failed for user with email ${email}. Invalid or expired code `);
+
+       return next(createError(400, "Invalid or expired code"));
+      }
   
       if (new Date() > activation.expires_at) {
+        logger.error(`Activate account Failed for user with email ${email}. Activation code has expired`);
+
         return next(createError(400, "Activation code has expired"));
       }
   
       // Activate user
       await user.update({ is_activated: true });
       await activation.update({ validated_at: new Date() });
-  
+      logger.error(`Activate account Failed for user with email ${email} successfull`);
+
       res.status(200).json({ message: "Account activated successfully" });
     } catch (error) {
+      logger.error(`Activate account Failed for user with email ${email}. Unexpected error occured`);
+
       next(error);
     }
   };
   
-
+/**
+ * @swagger
+ * /user/login:
+ *   post:
+ *     summary: User login and token generation
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User authenticated successfully
+ */
 exports.signin = async (req, res, next) => {
-  console.log(req.body.email);
+      logger.info(`Login start for user with email ${req.body.email}`);
   try {
     //get user by email
     const user = await User.findOne({ where: { email: req.body.email } });
 
-    if (!user) return next(createError(404, "User doesn't exist"));
-    if (user.is_activated == false) return next(createError(404, "User Account not activated"));
+    if (!user){
+      logger.error(`Login Failed. No for user with email ${req.body.email} Found`);
+      return next(createError(404, "User doesn't exist"));
+
+    } 
+    if(user.is_activated == false){
+      logger.error(`Login Failed for user with email ${req.body.emai} User Account not activated`);
+
+      return next(createError(404, "User Account not activated"));
+    } 
 
 
     //verify password
@@ -109,7 +212,11 @@ exports.signin = async (req, res, next) => {
       user.password
     );
 
-    if (!comparePassword) return next(createError(400, "Wrong password"));
+    if (!comparePassword){
+      logger.error(`Login Failed for user with email ${req.body.emai}. Wrong password`);
+
+      return next(createError(400, "Wrong password"));
+    } 
 
     //generate auth token
     const token = jwt.sign({ id: user.id, role:user.role, email:user.email, will_expire: user.will_expire
@@ -129,13 +236,35 @@ exports.signin = async (req, res, next) => {
       })
       .status(200)
       .json(userData);
+      logger.info(`Login success for user with email ${req.body.email}`);
+
   } catch (error) {
+      logger.error(`Login Failed for user with email ${email}. Unexpected error during signin`);
+
     next(createError(500, "Error occured during signin", error.message));
   }
 };
 
 /** GET ALL SOLOBIZDEVS */
-
+/**
+ * @swagger
+ * /user/get-solo-bizdevs:
+ *   post:
+ *     summary: Get all solo business developers
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of solo biz devs
+ */
 exports.getSoloBizDevs = async (req, res, next) => {
   const { limit, offset } = require("./utils/paginate").paginate(req);
 
@@ -159,9 +288,32 @@ exports.getSoloBizDevs = async (req, res, next) => {
 };
 
 /** GET ALL USERS OF ENTERPRISE */
-
+/**
+ * @swagger
+ * /user/enterprise/{enterprise_id}:
+ *   post:
+ *     summary: Get all users of an enterprise
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: enterprise_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of users
+ */
 exports.getUsersByEnterprise = async (req, res, next) => {
-  const { limit, offset } = require("../utils/pagination").paginate(req);
+  const { limit, offset } = require("./utils/paginate").paginate(req);
   const { enterprise_id } = req.params;
 
   try {
@@ -184,6 +336,22 @@ exports.getUsersByEnterprise = async (req, res, next) => {
 };
 
 /**GET USER BY EMAIL ***********/
+/**
+ * @swagger
+ * /user/get-user-by-email:
+ *   get:
+ *     summary: Get user details by email
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User details
+ */
 exports.getUserByEmail = async (req, res, next) => {
     const email = req.query.email.trim().toLowerCase()
     console.log(email)
@@ -203,13 +371,32 @@ exports.getUserByEmail = async (req, res, next) => {
 };
 
 /** GET ALL SAAS STAFF */
+/**
+ * @swagger
+ * /user/saas-staff:
+ *   post:
+ *     summary: Get all admin/operator/superadmin users
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of SaaS staff
+ */
 exports.getSaasAtaff = async (req, res, next) => {
-  const { limit, offset } = require("../utils/pagination").paginate(req);
+  const { limit, offset } = require("./utils/paginate").paginate(req);
 
   try {
     const users = await User.findAndCountAll({
       where: {
-        role: ["admin", "operator", "superadmin"], // Sequelize auto-maps this to IN()
+        role: ["admin", "operator", "super_admin"], // Sequelize auto-maps this to IN()
       },
       limit,
       offset,
@@ -229,6 +416,27 @@ exports.getSaasAtaff = async (req, res, next) => {
 
 
 /**PASSWORD RESET */
+/**
+ * @swagger
+ * /user/reset-password:
+ *   post:
+ *     summary: Reset password and send new password to email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: New password sent to email
+ */
 exports.resetPassword = async (req, res, next) => {
   const { email } = req.body;
   try {
@@ -257,3 +465,146 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
+
+
+/**
+ * @swagger
+ * /user/staff-update/{id}:
+ *   put:
+ *     summary: Staff update a user's information
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the user to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Failed to update user
+ */
+exports.staffUpdateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return next(createError(404, "User not found"));
+    }
+
+   // Prepare updated data object starting with current values
+    const updateData = {
+      first_name: req.body.first_name ?? user.first_name,
+      last_name: req.body.last_name ?? user.last_name,
+      email: req.body.email ?? user.email,
+      avatar: user.avatar, // will be conditionally updated below
+    };
+
+    // Handle avatar upload if exists
+    if (req.file) {
+      const safeEmail = (req.body.email || user.email).replace(/[@.]/g, "_");
+      updateData.avatar = `/storage/users/${safeEmail}/${req.file.filename}`;
+    }
+
+    await user.update(updateData);
+
+    logger.info(`User updated: ${user.email}`);
+    res.status(200).json({ message: "User updated successfully", data: user });
+  } catch (error) {
+    logger.error(`Update user error: ${error.message}`);
+    next(createError(500, "Failed to update user", error.message));
+  }
+};
+
+
+
+
+/**
+ * @swagger
+ * /user/change-password:
+ *   put:
+ *     summary: Change currently logged in user's password (requires old password confirmation)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - old_password
+ *               - new_password
+ *               - confirm_password
+ *             properties:
+ *               old_password:
+ *                 type: string
+ *               new_password:
+ *                 type: string
+ *               confirm_password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Validation error or wrong old password
+ *       500:
+ *         description: Failed to update password
+ */
+exports.updatePassword = async (req, res, next) => {
+ try {
+    const { old_password, new_password, confirm_password } = req.body;
+    const userEmail = req.user.email; // now using email from token/session
+
+    if (!old_password || !new_password || !confirm_password) {
+      return next(createError(400, "All password fields are required."));
+    }
+
+    if (new_password !== confirm_password) {
+      return next(createError(400, "New password and confirmation do not match."));
+    }
+
+    const user = await User.findOne({ where: { email: userEmail } });
+    if (!user) {
+      return next(createError(404, "User not found"));
+    }
+
+    // Check if old password is correct
+    const isMatch = await bcrypt.compare(old_password, user.password);
+    if (!isMatch) {
+      return next(createError(400, "Old password is incorrect."));
+    }
+
+    // Hash and update new password
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    await user.update({ password: hashedPassword });
+
+    logger.info(`Password updated for user: ${user.email}`);
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    logger.error(`Update password error: ${error.message}`);
+    next(createError(500, "Failed to update password", error.message));
+  }
+};

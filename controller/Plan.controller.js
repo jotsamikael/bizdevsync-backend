@@ -2,6 +2,56 @@ const {Plan} = require('../model');
 const createError = require('../middleware/error'); // Assuming you have a custom error creator
 
 // Create a new subscription plan (admin only)
+/**
+ * @swagger
+ * /plans:
+ *   post:
+ *     summary: Create a new subscription plan
+ *     tags: [Plans]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - price
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Name of the plan
+ *               labelcolor:
+ *                 type: string
+ *                 description: Label color for UI badge (e.g. '#FF0000')
+ *               iconname:
+ *                 type: string
+ *                 description: Name of the icon for UI
+ *               price:
+ *                 type: number
+ *                 description: Price of the plan
+ *               is_featured:
+ *                 type: integer
+ *               is_recommended:
+ *                 type: integer
+ *               is_trial:
+ *                 type: integer
+ *               days:
+ *                 type: integer
+ *                 description: Validity period in days
+ *               trial_days:
+ *                 type: integer
+ *               data:
+ *                 type: string
+ *                 description: JSON string containing feature limits and access (e.g. '{"leads_limit":"200"}')
+ *     responses:
+ *       201:
+ *         description: Plan created successfully
+ *       500:
+ *         description: Failed to create plan
+ */
 exports.createPlan = async (req, res, next) => {
   try {
     const plan = await Plan.create(req.body);
@@ -32,6 +82,57 @@ exports.getAllPlans = async (req, res, next) => {
 };
 
 // Update a specific plan
+/**
+ * @swagger
+ * /plans/{id}:
+ *   put:
+ *     summary: Update a specific subscription plan
+ *     tags: [Plans]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the plan to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               labelcolor:
+ *                 type: string
+ *               iconname:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               is_featured:
+ *                 type: integer
+ *               is_recommended:
+ *                 type: integer
+ *               is_trial:
+ *                 type: integer
+ *               days:
+ *                 type: integer
+ *               trial_days:
+ *                 type: integer
+ *               data:
+ *                 type: string
+ *                 description: JSON string containing feature limits and flags
+ *     responses:
+ *       200:
+ *         description: Plan updated successfully
+ *       404:
+ *         description: Plan not found
+ *       500:
+ *         description: Failed to update plan
+ */
 exports.updatePlan = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -46,6 +147,29 @@ exports.updatePlan = async (req, res, next) => {
 };
 
 // Soft delete a plan (status = 0)
+/**
+ * @swagger
+ * /plans/{id}:
+ *   delete:
+ *     summary: Soft delete a specific subscription plan (sets status to 0)
+ *     tags: [Plans]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the plan to soft delete
+ *     responses:
+ *       200:
+ *         description: Plan deleted (soft) successfully
+ *       404:
+ *         description: Plan not found
+ *       500:
+ *         description: Failed to delete plan
+ */
 exports.deletePlan = async (req, res, next) => {
   const { id } = req.params;
   try {
