@@ -27,6 +27,7 @@ const FollowupRouter =  require('./router/Followup.router');
 const CompetitorRouter =  require('./router/Competitor.router');
 const BusinessHasCompetitorRouter =  require('./router/BusinessHasCompetitor.router');
 const ContactHasMeetingRouter =  require('./router/ContactHasMeeting.router');
+const SourceRouter =  require('./router/Source.router');
 
 
 //port
@@ -52,7 +53,7 @@ app.use('/api/plans', planRouter);
 app.use('/api/gateways', gatewayRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/leads', leadRouter);
-app.use('/api/productCategories', ProductCategoryRouter);
+app.use('/api/product-categories', ProductCategoryRouter);
 
 app.use('/api/products', ProductRouter);
 app.use('/api/enterprises', EnterpriseRouter);
@@ -65,6 +66,7 @@ app.use('/api/competitors', CompetitorRouter);
 app.use('/api/business-has-competitors', BusinessHasCompetitorRouter);
 app.use('/api/contact-has-meeting', ContactHasMeetingRouter);
 
+app.use('/api/sources', SourceRouter);
 
 
 

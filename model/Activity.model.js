@@ -3,13 +3,42 @@ const db = require('../config/db')
 
  const Activity = db.define('Activity', {
   idActivity: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  action_detail: { type: DataTypes.STRING },
+  title: { type: DataTypes.STRING },
+  detail: { type: DataTypes.STRING },
+  created_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  start_date:{
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+    end_date:{
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+  tags:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+   priority:{
+        type: DataTypes.STRING, //Enum: CRITICAL, IMPORTANT, HIGH, MEDIUM, LOW
+        allowNull: false,
+    },
   last_action: { type: DataTypes.STRING },
   last_action_date: { type: DataTypes.STRING },
   next_action: { type: DataTypes.STRING },
   next_action_date: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  Followup_idFollowup: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  Business_idBusiness: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   is_archived: {
     type: DataTypes.BOOLEAN,

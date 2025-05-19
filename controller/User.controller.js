@@ -224,7 +224,7 @@ exports.signin = async (req, res, next) => {
 
     //send user dto excluding password
     const { password, ...userData } = user.dataValues;
-    console.log({ password, ...userData });
+    //console.log({ password, ...userData });
 
     //create a cookie, token will be send through cookie
     res
@@ -493,6 +493,8 @@ exports.resetPassword = async (req, res, next) => {
  *                 type: string
  *               email:
  *                 type: string
+ *               status:
+ *                 type: boolean
  *               avatar:
  *                 type: string
  *                 format: binary
@@ -518,6 +520,7 @@ exports.staffUpdateUser = async (req, res, next) => {
       first_name: req.body.first_name ?? user.first_name,
       last_name: req.body.last_name ?? user.last_name,
       email: req.body.email ?? user.email,
+      status: req.body.status ?? user.status,
       avatar: user.avatar, // will be conditionally updated below
     };
 
@@ -538,6 +541,42 @@ exports.staffUpdateUser = async (req, res, next) => {
 };
 
 
+
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const userEmail = req.user.email; // now using email from token/session
+    const user = await User.findOne({ where: { email: userEmail } });
+
+    if (!user) {
+        logger.info(`No User found with email: ${userEmail}`);
+      return next(createError(404, "User not found"));
+    }
+
+   // Prepare updated data object starting with current values
+    const updateData = {
+      first_name: req.body.first_name ?? user.first_name,
+      last_name: req.body.last_name ?? user.last_name,
+      email: req.body.email ?? user.email,
+      status: req.body.status ?? user.status,
+      avatar: user.avatar, // will be conditionally updated below
+    };
+
+    // Handle avatar upload if exists
+    if (req.file) {
+      const safeEmail = (req.body.email || user.email).replace(/[@.]/g, "_");
+      updateData.avatar = `/storage/users/${safeEmail}/${req.file.filename}`;
+    }
+
+    await user.update(updateData);
+
+    logger.info(`User updated: ${user.email}`);
+    res.status(200).json({ message: "User updated successfully", data: user });
+  } catch (error) {
+    logger.error(`Update user error: ${error.message}`);
+    next(createError(500, "Failed to update user", error.message));
+  }
+};
 
 
 /**

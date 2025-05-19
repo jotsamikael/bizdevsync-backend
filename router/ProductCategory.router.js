@@ -8,9 +8,9 @@ const requireRole = require('../middleware/autorisationMiddleware');
 
 const allowedRoles = ['enterprise_admin', 'solo_biz_dev'];
 
-router.post('/product-categories', authMiddleware, requireRole(allowedRoles), validate(CreateProductCategorySchema), controller.createProductCategory);
-router.get('/product-categories', authMiddleware, requireRole(allowedRoles), controller.getAllProductCategories);
-router.put('/product-categories/:id', authMiddleware, requireRole(allowedRoles), controller.updateProductCategory);
-router.delete('/product-categories/:id', authMiddleware, requireRole(allowedRoles), controller.archiveProductCategory);
+router.post('/create', authMiddleware, requireRole(allowedRoles), validate(CreateProductCategorySchema), controller.createProductCategory);
+router.get('/get-all', authMiddleware, requireRole(allowedRoles), controller.getAllProductCategories);
+router.put('/update/:id', authMiddleware, requireRole(allowedRoles), controller.updateProductCategory);
+router.delete('/delete/:id', authMiddleware, requireRole(allowedRoles), controller.archiveProductCategory);
 
 module.exports = router;

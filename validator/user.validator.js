@@ -15,13 +15,20 @@ const loginSchema = Joi.object({
   });
   
 
-  const updateUserSchema = Joi.object({
+  const staffUpdateUserSchema = Joi.object({
   first_name: Joi.string().optional(),
   last_name: Joi.string().optional(),
   email: Joi.string().email().optional(),  // ✅ optional and must be a valid email ONLY if provided
-  password: Joi.string().min(6).optional(),
+  status: Joi.boolean().optional(),
 });
 
+
+ const userUpdateProfileSchema = Joi.object({
+  first_name: Joi.string().optional(),
+  last_name: Joi.string().optional(),
+  email: Joi.string().email().optional(),  // ✅ optional and must be a valid email ONLY if provided
+  status: Joi.boolean().optional(),
+});
 
 
 const updatePasswordSchema = Joi.object({
@@ -35,4 +42,4 @@ const updatePasswordSchema = Joi.object({
 module.exports = {  };
 
 
-module.exports = { registerSchema, loginSchema, updateUserSchema, updatePasswordSchema };
+module.exports = { registerSchema, loginSchema, staffUpdateUserSchema,userUpdateProfileSchema, updatePasswordSchema };

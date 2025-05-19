@@ -4,7 +4,6 @@ const db = require('../config/db')
  const Followup = db.define('Followup', {
   idFollowup: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   start_date: { type: DataTypes.STRING },
-  source: { type: DataTypes.STRING },
   lead_score: {
     type: DataTypes.INTEGER,
     allowNull: false,

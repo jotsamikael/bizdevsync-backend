@@ -4,7 +4,9 @@ const CONTROLLER = require('../controller/User.controller');
 const upload = require('../controller/utils/fileupload')
 const {registerSchema}  = require('../validator/user.validator')
 const {loginSchema} = require('../validator/user.validator')
-const {updateUserSchema} = require('../validator/user.validator')
+const {staffUpdateUserSchema} = require('../validator/user.validator')
+const {userUpdateProfileSchema} = require('../validator/user.validator')
+
 const {updatePasswordSchema} = require('../validator/user.validator')
 
 const validate = require('../middleware/validator.middleware')
@@ -22,12 +24,14 @@ router.post('/login',validate(loginSchema) ,CONTROLLER.signin)
 router.post('/reset-password', CONTROLLER.resetPassword);
 //Activate account
 router.post('/activate-account', CONTROLLER.activateAccount);
-//update user
-router.put('/staff-update/:id', upload.single('avatar'), validate(updateUserSchema), CONTROLLER.staffUpdateUser);
+//staff update user
+router.put('/staff-update/:id',authMiddleware, requireRole(AdminAccess), upload.single('avatar'), validate(staffUpdateUserSchema), CONTROLLER.staffUpdateUser);
+
+//Currently logged in user update profile
+router.put('/update-profile/:id',authMiddleware, upload.single('avatar'), validate(userUpdateProfileSchema), CONTROLLER.updateProfile);
 
 //change password
 router.put('/change-password', authMiddleware, validate(updatePasswordSchema), CONTROLLER.updatePassword);
-
 
 //GET all solobizdev, connected user must be staff i.e ('admin', 'super_admin' or 'operator')
 router.post('/get-solo-bizdevs', authMiddleware, requireRole(AdminAccess),CONTROLLER.getSoloBizDevs)

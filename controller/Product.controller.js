@@ -7,7 +7,7 @@ const { paginate } = require("./utils/paginate");
 /** Create Product */
 /**
  * @swagger
- * /products:
+ * /products/create:
  *   post:
  *     summary: Create a new product
  *     tags: [Products]
@@ -26,8 +26,6 @@ const { paginate } = require("./utils/paginate");
  *                 type: number
  *               description:
  *                 type: string
- *               Enterprise_idEnterprise:
- *                 type: integer
  *               ProductCategory_idProductCategory:
  *                 type: integer
  *     responses:
@@ -42,7 +40,6 @@ exports.createProduct = async (req, res, next) => {
       label: req.body.label,
       price: req.body.price,
       description: req.body.description,
-      Enterprise_idEnterprise: req.body.Enterprise_idEnterprise,
       ProductCategory_idProductCategory: req.body.ProductCategory_idProductCategory,
       User_idUser: userId
     });
@@ -58,7 +55,7 @@ exports.createProduct = async (req, res, next) => {
 /** Get all Products (paginated) */
 /**
  * @swagger
- * /products:
+ * /products/get-all:
  *   get:
  *     summary: Get all products created by the logged-in user
  *     tags: [Products]
@@ -86,7 +83,7 @@ exports.getAllProducts = async (req, res, next) => {
         ,is_archived: false },
       limit,
       offset,
-      include: [ProductCategory, Enterprise, User]
+      include: [ProductCategory] //include iis used for eager loading and will attach the product catgeory to response
     });
     res.status(200).json(products);
   } catch (error) {
@@ -98,7 +95,7 @@ exports.getAllProducts = async (req, res, next) => {
 /** Update Product */
 /**
  * @swagger
- * /products/{id}:
+ * /products/update/{id}:
  *   put:
  *     summary: Update a product
  *     tags: [Products]
@@ -123,8 +120,6 @@ exports.getAllProducts = async (req, res, next) => {
  *                 type: number
  *               description:
  *                 type: string
- *               Enterprise_idEnterprise:
- *                 type: integer
  *               ProductCategory_idProductCategory:
  *                 type: integer
  *     responses:
@@ -147,7 +142,7 @@ exports.updateProduct = async (req, res, next) => {
 /** Archive Product */
 /**
  * @swagger
- * /products/{id}:
+ * /products/delete/{id}:
  *   delete:
  *     summary: Archive a product (soft delete)
  *     tags: [Products]
@@ -179,7 +174,7 @@ exports.archiveProduct = async (req, res, next) => {
 
 /**
  * @swagger
- * /products/product-categories/{categoryId}:
+ * /products/get-all-by-id/{categoryId}:
  *   get:
  *     summary: Get paginated products for a category
  *     tags: [Products]

@@ -1,19 +1,20 @@
 const {DataTypes} = require('sequelize')
 const db = require('../config/db')
 
- const ProductCategory = db.define('ProductCategory', {
-  idProductCategory: {
+ const Source = db.define('Source', {
+  idSource: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
+
   label: {
     type: DataTypes.STRING,
     allowNull: false
   },
-   description: {
+  description: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: false
   },
   is_archived: {
     type: DataTypes.BOOLEAN,
@@ -21,7 +22,8 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'ProductCategory',
+  tableName: 'sources',
   timestamps: false,
 });
-module.exports = ProductCategory
+
+module.exports = Source

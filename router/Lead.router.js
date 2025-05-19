@@ -12,17 +12,17 @@ const requireRole = require('../middleware/autorisationMiddleware');
 const canCreateLead = [ 'enterprise_admin', 'solo_biz_dev' ];
 
 
-router.post('/', authMiddleware, requireRole(canCreateLead), upload.single('logo'), validate(CreateLeadSchema), controller.createLead);
+router.post('/create', authMiddleware, requireRole(canCreateLead), upload.single('logo'), validate(CreateLeadSchema), controller.createLead);
+
+//get leads assigned to loggedIn user
+router.get('/assigned-to-me', authMiddleware, controller.getLeadsByAssignedUser);
+
+//get leads created by to loggedIn user
+router.get('/created-by-me', authMiddleware, controller.getLeadsByCreator);
 
 
-router.get('/assigned', authMiddleware, controller.getLeadsByAssignedUser);
+router.put('/update/:id', authMiddleware, validate(UpdateLeadSchema), controller.updateLead);
 
-
-router.get('/created', authMiddleware, controller.getLeadsByCreator);
-
-
-router.put('/:id', authMiddleware, validate(UpdateLeadSchema), controller.updateLead);
-
-router.delete('/:id', authMiddleware, controller.archiveLead);
+router.delete('/delete/:id', authMiddleware, controller.archiveLead);
 
 module.exports = router;

@@ -29,7 +29,7 @@ const Contact = db.define('Contact',{
         unique: true
     },
     weight:{ //how decisive is he/she on a scale of 0-5
-        type: DataTypes.FLOAT,
+        type: DataTypes.STRING, //enum either Decision-maker, Prescriber, Employ
         allowNull: true,
       
     },

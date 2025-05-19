@@ -1,22 +1,36 @@
 const Joi = require('joi');
 
 const CreateLeadSchema = Joi.object({
-    assignedToUser: Joi.optional(),
+    assigned_to_user_id: Joi.optional(),
     name: Joi.string().required(),
+    status: Joi.string().required(),
     description: Joi.string().required(),
-    logo: Joi.string().optional(),
+    website: Joi.string().optional(),
+    email: Joi.string().optional(),
+    address: Joi.string().optional(),
+    town: Joi.string().optional(),
+    tags: Joi.string().optional(),
     country: Joi.number().required(),
     activitySector: Joi.string().required(),
-    is_private: Joi.boolean().optional()
+    is_private: Joi.boolean().optional(),
+    source: Joi.number().required(),
 });
 
 const UpdateLeadSchema = Joi.object({
-    assignedToUser: Joi.optional(),
+    assigned_to_user_id: Joi.optional(),
     name: Joi.string().optional(),
+    status: Joi.string().optional(),
     description: Joi.string().optional(),
-    Country_idCountry: Joi.number().optional(),
+    website: Joi.string().optional(),
+    email: Joi.string().optional(),
+    address: Joi.string().optional(),
+    town: Joi.string().optional(),
+    tags: Joi.string().optional(),
+    country: Joi.number().optional(),
     activitySector: Joi.string().optional(),
-    is_private: Joi.boolean().optional()
+    is_private: Joi.boolean().optional(),
+    source: Joi.number().optional()
+
 });
 
 module.exports = { CreateLeadSchema, UpdateLeadSchema };

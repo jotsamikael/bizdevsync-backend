@@ -4,7 +4,7 @@ const logger = require('./utils/logger.utils');
 
 /**
  * @swagger
- * /product-categories:
+ * /product-categories/create:
  *   post:
  *     summary: Create a new product category
  *     tags: [ProductCategories]
@@ -19,14 +19,20 @@ const logger = require('./utils/logger.utils');
  *             properties:
  *               label:
  *                 type: string
+ *               description:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Product category created
  */
 exports.createProductCategory = async (req, res, next) => {
+      const userId = req.user.id;
+
   try {
     const category = await ProductCategory.create({
-      label: req.body.label
+      label: req.body.label,
+      description: req.body.description,
+      User_idUser: userId
     });
 
     res.status(201).json({ message: 'Product category created successfully', data: category });
@@ -39,9 +45,9 @@ exports.createProductCategory = async (req, res, next) => {
 
 /**
  * @swagger
- * /product-categories:
+ * /product-categories/get-all:
  *   get:
- *     summary: Get all product categories
+ *     summary: Get all product categories for currently loggedin user
  *     tags: [ProductCategories]
  *     security:
  *       - bearerAuth: []
@@ -59,10 +65,12 @@ exports.createProductCategory = async (req, res, next) => {
  *         description: List of product categories
  */
 exports.getAllProductCategories = async (req, res, next) => {
+  const userId = req.user.id;
+
   try {
     const { limit, offset } = require("./utils/paginate").paginate(req);
     const categories = await ProductCategory.findAndCountAll({
-      where: { is_archived: false },
+      where: { is_archived: false,  User_idUser: userId },
       limit,
       offset
     });
@@ -76,7 +84,7 @@ exports.getAllProductCategories = async (req, res, next) => {
 
 /**
  * @swagger
- * /product-categories/{id}:
+ * /product-categories/update/{id}:
  *   put:
  *     summary: Update a product category
  *     tags: [ProductCategories]
@@ -97,15 +105,18 @@ exports.getAllProductCategories = async (req, res, next) => {
  *             properties:
  *               label:
  *                 type: string
+ *               description:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Product category updated
  */
 exports.updateProductCategory = async (req, res, next) => {
+    const userId = req.user.id;
   try {
     const id = req.params.id;
     const updated = await ProductCategory.update(req.body, {
-      where: { idProductCategory: id, is_archived: false }
+      where: { idProductCategory: id, is_archived: false, User_idUser: userId }
     });
 
     res.status(200).json({ message: 'Product category updated successfully', data: updated });
@@ -117,7 +128,7 @@ exports.updateProductCategory = async (req, res, next) => {
 
 /**
  * @swagger
- * /product-categories/{id}:
+ * /product-categories/delete/{id}:
  *   delete:
  *     summary: Archive a product category (soft delete)
  *     tags: [ProductCategories]

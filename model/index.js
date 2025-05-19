@@ -21,7 +21,19 @@ const Plan = require('./Plan.model.js')
 const Order = require('./Oder.model.js')
 const Gateway = require('./Gateway.model.js')
 const PasswordReset = require('./ResetPassword.model.js')
+const Source = require('./Source.model.js')
 
+
+
+
+// ===============
+// Source Relationships
+// ===============
+Lead.belongsTo(Source,{foreignKey:'_idSource'})
+Source.hasMany(Lead,{foreignKey:'_idSource'})
+
+Source.belongsTo(User,{foreignKey:'_idUser'})
+User.hasMany(Source,{foreignKey:'_idUser'})
 
 // ===============
 // Enterprise Relationships
@@ -151,14 +163,13 @@ Competitor.belongsToMany(Business, {
 // ===============
 // Product Relationships (if applicable)
 // ===============
-
-// Product belongs to Enterprise
-Product.belongsTo(Enterprise, { foreignKey: 'Enterprise_idEnterprise' });
-Enterprise.hasMany(Product, { foreignKey: 'Enterprise_idEnterprise' });
-
 // Product belongs to ProductCategory
 Product.belongsTo(ProductCategory, { foreignKey: 'ProductCategory_idProductCategory' });
 ProductCategory.hasMany(Product, { foreignKey: 'ProductCategory_idProductCategory' });
+
+// Product belongs to User
+ProductCategory.belongsTo(User, { foreignKey: 'User_idUser' });
+User.hasMany(ProductCategory, { foreignKey: 'User_idUser' });
 
 // Product belongs to User
 Product.belongsTo(User, { foreignKey: 'User_idUser' });
@@ -173,7 +184,6 @@ Order.belongsTo(Plan, { foreignKey: 'plan_id' });
 User.hasMany(Order, { foreignKey: 'user_id' });
 Plan.hasMany(Order, { foreignKey: 'plan_id' });
 Gateway.hasMany(Order, { foreignKey: 'gateway_id' });
-
 
 
 module.exports ={
@@ -196,6 +206,7 @@ Country,
 Gateway,
 Plan,
 Order,
-PasswordReset 
+PasswordReset,
+Source 
 
 }

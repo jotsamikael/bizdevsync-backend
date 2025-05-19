@@ -11,7 +11,7 @@ const paginate = require("./utils/paginate");
 /** CREATE LEAD */
 /**
  * @swagger
- * /leads:
+ * /leads/create:
  *   post:
  *     summary: Create a new lead
  *     tags: [Leads]
@@ -20,15 +20,36 @@ const paginate = require("./utils/paginate");
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               name: { type: string }
- *               descrption: { type: string }
- *               country: { type: string }
- *               activitySector: { type: string }
- *               logo: { type: string, format: binary }
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               activitySector:
+ *                 type: string
+ *               assigned_to_user_id:
+ *                 type: integer
+ *               website:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               town:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *               is_private:
+ *                 type: string
+ *               source:
+ *                 type: integer
  *     responses:
  *       201:
  *         description: Lead created successfully
@@ -39,19 +60,22 @@ exports.createLead = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const leadName = req.body.name;
-        const logoPath = req.file
-            ? `/storage/leads/${leadName}/${req.file.filename}`
-            : '/img/placeholder.png';
-
+        
         const lead = await Lead.create({
             assigned_to_user_id: req.body.assignedToUser || userId,
             created_by_user_id: userId,
             name: leadName,
+            website:req.body.website,
+            status:req.body.status,
+            email:req.body.email,
+            address:req.body.address,
+            town:req.body.town,
+            tags:req.body.tags,
             description: req.body.description,
-            logo: logoPath,
             Country_idCountry: req.body.country,
             activitySector: req.body.activitySector,
-            is_private: req.body.is_private || false
+            is_private: req.body.is_private || false,
+            _idSource: req.body.source
         });
 
         res.status(201).json({ message: 'Lead created successfully', data: lead });
@@ -65,7 +89,7 @@ exports.createLead = async (req, res, next) => {
 /**GET LEADS BY ASSIGNED TO USER */
 /**
  * @swagger
- * /leads/assigned:
+ * /leads/assigned-to-me:
  *   get:
  *     summary: Get all leads assigned to the logged-in user
  *     tags: [Leads]
@@ -104,7 +128,7 @@ exports.getLeadsByAssignedUser = async (req, res, next) => {
 /**GET LEADS BY CREATOR */
 /**
  * @swagger
- * /leads/created:
+ * /leads/created-by-me:
  *   get:
  *     summary: Get all leads created by the logged-in user
  *     tags: [Leads]
@@ -142,7 +166,7 @@ exports.getLeadsByCreator = async (req, res, next) => {
 /**UPDATE */
 /**
  * @swagger
- * /leads/{id}:
+ * /leads/update/{id}:
  *   put:
  *     summary: Update a lead
  *     tags: [Leads]
@@ -157,8 +181,35 @@ exports.getLeadsByCreator = async (req, res, next) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateLead'
+ *            schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               activitySector:
+ *                 type: string
+ *               assigned_to_user_id:
+ *                 type: integer
+ *               website:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               town:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *               is_private:
+ *                 type: string
+ *               source:
+ *                 type: integer
  *     responses:
  *       200:
  *         description: Lead updated
@@ -166,7 +217,22 @@ exports.getLeadsByCreator = async (req, res, next) => {
 exports.updateLead = async (req, res, next) => {
     try {
         const leadId = req.params.id;
-        const updated = await Lead.update(req.body, { where: { id: leadId, is_archived: false } });
+        const lead = await Lead.create({
+            assigned_to_user_id: req.body.assignedToUser,
+            name: leadName,
+            website:req.body.website,
+            status:req.body.status,
+            email:req.body.email,
+            address:req.body.address,
+            town:req.body.town,
+            tags:req.body.tags,
+            description: req.body.description,
+            Country_idCountry: req.body.country,
+            activitySector: req.body.activitySector,
+            is_private: req.body.is_private,
+            _idSource: req.body.source
+        });
+        const updated = await Lead.update(lead, { where: { id: leadId, is_archived: false } });
         res.status(200).json({ message: 'Lead updated successfully', data: updated });
     } catch (error) {
         logger.error(`Update lead error: ${error.message}`);
@@ -179,7 +245,7 @@ exports.updateLead = async (req, res, next) => {
 
 /**
  * @swagger
- * /leads/{id}:
+ * /leads/delete/{id}:
  *   delete:
  *     summary: Archive a lead (soft delete)
  *     tags: [Leads]

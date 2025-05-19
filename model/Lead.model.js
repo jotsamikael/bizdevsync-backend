@@ -9,14 +9,34 @@ const Lead = db.define('Lead',{
         allowNull: false,
         unique: true
     },
+    status:{
+        type: DataTypes.STRING, //Enum: UNQUALIFIED, QUALIFIED, CONVERTED
+        allowNull: false,
+        defaultValue: 'UNQUALIFIED'
+    },
     description:{
         type: DataTypes.TEXT,
         allowNull: false
     },
-    logo:{
+    website:{
         type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: 'placeholder'
+        allowNull: true,
+    },
+    email:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    address:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+     town:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    tags:{
+        type: DataTypes.STRING,
+        allowNull: true,
     },
     activitySector:{
         type: DataTypes.STRING,

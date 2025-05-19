@@ -11,7 +11,6 @@ const db = require('../config/db')
   potential_time_for_delivery: { type: DataTypes.STRING },
   case_started_date: { type: DataTypes.STRING },
   current_supplier: { type: DataTypes.STRING },
-  source: { type: DataTypes.STRING },
   previous_vc: { type: DataTypes.STRING },
   turnover_signable: { type: DataTypes.STRING },
   notes: { type: DataTypes.STRING },
