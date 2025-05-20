@@ -8,14 +8,14 @@ const requireRole = require('../middleware/autorisationMiddleware');
 
 const allowedRoles = ['enterprise_admin', 'solo_biz_dev'];
 
-router.post('/activities', authMiddleware, requireRole(allowedRoles), validate(CreateActivitySchema), controller.createActivity);
-router.get('/activities', authMiddleware, requireRole(allowedRoles), controller.getAllActivities);
-router.get('/activities/:id', authMiddleware, requireRole(allowedRoles), controller.getActivityById);
-router.put('/activities/:id', authMiddleware, requireRole(allowedRoles), controller.updateActivity);
-router.delete('/activities/:id', authMiddleware, requireRole(allowedRoles), controller.archiveActivity);
+router.post('/create', authMiddleware, requireRole(allowedRoles), validate(CreateActivitySchema), controller.createActivity);
+router.get('/get-all', authMiddleware, requireRole(allowedRoles), controller.getAllActivities);
+router.get('/get-by-id/:id', authMiddleware, requireRole(allowedRoles), controller.getActivityById);
+router.put('/update/:id', authMiddleware, requireRole(allowedRoles), controller.updateActivity);
+router.delete('/delete/:id', authMiddleware, requireRole(allowedRoles), controller.archiveActivity);
 
-router.get('/activities/followups/:followupId', controller.getActivitiesByFollowupId);
-router.get('/activities/businesses/:businessId', controller.getActivitiesByBusinessId);
+router.get('/get-by-followup/:followupId', controller.getActivitiesByFollowupId);
+router.get('/get-by-business/:businessId', controller.getActivitiesByBusinessId);
 
 
 module.exports = router;

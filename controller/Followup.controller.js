@@ -1,12 +1,14 @@
-const { Followup, Lead } = require('../model');
+const { Followup, Lead, Activity, Meeting } = require('../model');
 const createError = require('../middleware/error');
 const logger = require('./utils/logger.utils');
 const { paginate } = require('./utils/paginate');
 const scoring = require('./utils/scoring.utils')
+const { Op } = require('sequelize');
+
 
 /**
  * @swagger
- * /followups:
+ * /followups/create:
  *   post:
  *     summary: Create a new followup
  *     tags: [Followups]
@@ -19,9 +21,22 @@ const scoring = require('./utils/scoring.utils')
  *           schema:
  *             type: object
  *             properties:
- *               start_date: { type: string }
- *               source: { type: string }
- *               Lead_idLead: { type: integer }
+ *               start_date:
+ *                 type: string
+ *                 format: date-time
+ *               Lead_idLead:
+ *                 type: integer
+ *               outcome:
+ *                 type: string
+ *               notes:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [in_progress, completed, paused, cancelled]
+ *               priority:
+ *                 type: string
+ *                 enum: [CRITICAL, IMPORTANT, HIGH, MEDIUM, LOW]
+
  *     responses:
  *       201:
  *         description: Followup created
@@ -39,9 +54,9 @@ exports.createFollowup = async (req, res, next) => {
 
 /**
  * @swagger
- * /followups:
+ * /followups/get-all:
  *   get:
- *     summary: Get all followups (paginated)
+ *     summary: Get all followups (paginated) of logged in user
  *     tags: [Followups]
  *     security:
  *       - bearerAuth: []
@@ -58,7 +73,7 @@ exports.getAllFollowups = async (req, res, next) => {
           model: Lead,
           required: true,
           where: {
-            [db.Sequelize.Op.or]: [
+            [Op.or]: [
               { created_by_user_id: req.user.id },
               { assigned_to_user_id: req.user.id }
             ]
@@ -76,7 +91,7 @@ exports.getAllFollowups = async (req, res, next) => {
 
 /**
  * @swagger
- * /followups/{id}:
+ * /followups/get-by-id/{id}:
  *   get:
  *     summary: Get a followup by ID
  *     tags: [Followups]
@@ -101,7 +116,7 @@ exports.getFollowupById = async (req, res, next) => {
           model: Lead,
           required: true,
           where: {
-            [db.Sequelize.Op.or]: [
+            [Op.or]: [
               { created_by_user_id: req.user.id },
               { assigned_to_user_id: req.user.id }
             ]
@@ -119,7 +134,7 @@ exports.getFollowupById = async (req, res, next) => {
 
 /**
  * @swagger
- * /followups/{id}:
+ * /followups/update/{id}:
  *   put:
  *     summary: Update a followup
  *     tags: [Followups]
@@ -155,7 +170,7 @@ exports.updateFollowup = async (req, res, next) => {
 
 /**
  * @swagger
- * /followups/{id}:
+ * /followups/delete/{id}:
  *   delete:
  *     summary: Archive a followup
  *     tags: [Followups]
@@ -185,7 +200,7 @@ exports.archiveFollowup = async (req, res, next) => {
 
 /**
  * @swagger
- * /followups/{followupId}/next-action:
+ * /followups/next-action/{followupId}:
  *   get:
  *     summary: Get next scheduled action (activity/meeting) for a followup
  *     tags: [Followups]
@@ -208,7 +223,7 @@ exports.getNextActionForFollowup = async (req, res, next) => {
     const nextActivity = await Activity.findOne({
       where: {
         Followup_idFollowup: followupId,
-        next_action_date: { [db.Sequelize.Op.gt]: new Date() },
+        next_action_date: { [Op.gt]: new Date() },
         is_archived: false
       },
       order: [['next_action_date', 'ASC']]
@@ -217,7 +232,7 @@ exports.getNextActionForFollowup = async (req, res, next) => {
     const nextMeeting = await Meeting.findOne({
       where: {
         Followup_idFollowup: followupId,
-        next_action_date: { [db.Sequelize.Op.gt]: new Date() },
+        next_action_date: { [Op.gt]: new Date() },
         is_archived: false
       },
       order: [['next_action_date', 'ASC']]
@@ -235,7 +250,7 @@ exports.getNextActionForFollowup = async (req, res, next) => {
 
 /**
  * @swagger
- * /followups/{followupId}/overdue-actions:
+ * /followups/overdue-actions/{followupId}:
  *   get:
  *     summary: Get overdue actions (activity/meeting) for a followup
  *     tags: [Followups]
@@ -258,7 +273,8 @@ exports.getOverdueActionsForFollowup = async (req, res, next) => {
     const overdueActivities = await Activity.findAll({
       where: {
         Followup_idFollowup: followupId,
-        next_action_date: { [db.Sequelize.Op.lt]: new Date() },
+        status:{ [Op.ne]: "COMPLETED" }, // select rows where status is not complete, [Op.in]: ["PENDING", "IN_PROGRESS", "NOT_STARTED", "WAITING_FEEDBACK"]: include only certain status 
+        end_date: { [Op.lt]: new Date() },
         is_archived: false
       }
     });
@@ -266,7 +282,8 @@ exports.getOverdueActionsForFollowup = async (req, res, next) => {
     const overdueMeetings = await Meeting.findAll({
       where: {
         Followup_idFollowup: followupId,
-        next_action_date: { [db.Sequelize.Op.lt]: new Date() },
+        status:{ [Op.ne]: "COMPLETED" },
+        due_date: { [Op.lt]: new Date() },
         is_archived: false
       }
     });
@@ -280,7 +297,29 @@ exports.getOverdueActionsForFollowup = async (req, res, next) => {
   }
 };
 
-
+/**
+ * @swagger
+ * /followups/update-score:
+ *   put:
+ *     summary: Update a followup score
+ *     tags: [Followups]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Meeting'
+ *     responses:
+ *       200:
+ *         description: Followup scores updated
+ */
 exports.updateAllFollowupScores = async (req, res, next) => {
   try {
     const followups = await Followup.findAll({ where: { is_archived: false } });

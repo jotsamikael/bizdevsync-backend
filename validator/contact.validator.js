@@ -6,7 +6,6 @@ const CreateContactSchema = Joi.object({
   last_name: Joi.string().required(),
   email: Joi.string().email().allow(null, ''),
   phone: Joi.string().allow(null, ''),
-  weight: Joi.number().min(0).max(5).allow(null),
   position: Joi.string().allow(null, ''),
   language: Joi.object().required(),
   notes: Joi.string().allow(null, ''),

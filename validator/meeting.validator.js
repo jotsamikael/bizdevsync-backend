@@ -1,10 +1,14 @@
 const Joi = require('joi');
 
 const CreateMeetingSchema = Joi.object({
+  title:Joi.string().required(),
   date: Joi.string().required(),
-  summary: Joi.string().required(),
+  summary: Joi.string().optional(),
   next_action: Joi.string().required(),
-  idFollowup: Joi.number().required()
+  next_action_date: Joi.string().required(),
+  due_date:Joi.string().required(),
+  Followup_idFollowup: Joi.number().optional()
+
 });
 
 module.exports = { CreateMeetingSchema };

@@ -1,5 +1,8 @@
 //This function calculates a score for a specific Followup (opportunity) to qualify it as Hot / Warm / Cold 
 // based on recent interactions & activity. 
+const { Followup, Meeting, Activity } = require('../../model');
+const { Op } = require('sequelize');
+
 
 exports.computeFollowupScore = async (followupId) => {
   const followup = await Followup.findByPk(followupId);
@@ -11,7 +14,7 @@ exports.computeFollowupScore = async (followupId) => {
   const activitiesCount = await Activity.count({
     where: {
       Followup_idFollowup: followupId,
-      createdAt: { [db.Sequelize.Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      created_date: { [Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       is_archived: false
     }
   });
@@ -21,7 +24,7 @@ exports.computeFollowupScore = async (followupId) => {
   const meetingsCount = await Meeting.count({
     where: {
       Followup_idFollowup: followupId,
-      createdAt: { [db.Sequelize.Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      created_date: { [Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       is_archived: false
     }
   });

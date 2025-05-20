@@ -217,9 +217,9 @@ exports.getLeadsByCreator = async (req, res, next) => {
 exports.updateLead = async (req, res, next) => {
     try {
         const leadId = req.params.id;
-        const lead = await Lead.create({
+        const lead = {
             assigned_to_user_id: req.body.assignedToUser,
-            name: leadName,
+            name: req.body.name,
             website:req.body.website,
             status:req.body.status,
             email:req.body.email,
@@ -231,7 +231,7 @@ exports.updateLead = async (req, res, next) => {
             activitySector: req.body.activitySector,
             is_private: req.body.is_private,
             _idSource: req.body.source
-        });
+        };
         const updated = await Lead.update(lead, { where: { id: leadId, is_archived: false } });
         res.status(200).json({ message: 'Lead updated successfully', data: updated });
     } catch (error) {

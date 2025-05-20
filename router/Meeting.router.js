@@ -8,13 +8,13 @@ const requireRole = require('../middleware/autorisationMiddleware');
 
 const allowedRoles = ['enterprise_admin', 'solo_biz_dev'];
 
-router.post('/meetings', authMiddleware, requireRole(allowedRoles), validate(CreateMeetingSchema), controller.createMeeting);
-router.get('/meetings', authMiddleware, requireRole(allowedRoles), controller.getAllMeetings);
-router.get('/meetings/:id', authMiddleware, requireRole(allowedRoles), controller.getMeetingById);
-router.put('/meetings/:id', authMiddleware, requireRole(allowedRoles), controller.updateMeeting);
-router.delete('/meetings/:id', authMiddleware, requireRole(allowedRoles), controller.archiveMeeting);
+router.post('/create', authMiddleware, requireRole(allowedRoles), validate(CreateMeetingSchema), controller.createMeeting);
+router.get('/get-all', authMiddleware, requireRole(allowedRoles), controller.getAllMeetings);
+router.get('/get-by-id/:id', authMiddleware, requireRole(allowedRoles), controller.getMeetingById);
+router.put('/update/:id', authMiddleware, requireRole(allowedRoles), controller.updateMeeting);
+router.delete('/delete/:id', authMiddleware, requireRole(allowedRoles), controller.archiveMeeting);
 
-router.get('/meetings/followups/:followupId', controller.getMeetingsByFollowupId);
-router.get('/meetings/businesses/:businessId', controller.getMeetingsByBusinessId);
+router.get('/meetings/get-by-followup/:followupId', controller.getMeetingsByFollowupId);
+router.get('/meetings/get-by-business/:businessId', controller.getMeetingsByBusinessId);
 
 module.exports = router;

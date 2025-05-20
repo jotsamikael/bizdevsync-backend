@@ -8,7 +8,7 @@ const scoring = require('./utils/scoring.utils')
  */
 /**
  * @swagger
- * /activities:
+ * /activities/create:
  *   post:
  *     summary: Create a new activity
  *     tags: [Activities]
@@ -19,14 +19,56 @@ const scoring = require('./utils/scoring.utils')
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Activity'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               detail:
+ *                 type: string
+ *               created_date:
+ *                 type: string
+ *               start_date:
+ *                 type: string
+ *               end_date:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *               priority:
+ *                 type: string
+ *               last_action:
+ *                 type: string
+ *               last_action_date:
+ *                 type: string
+ *               next_action:
+ *                 type: string
+ *               next_action_date:
+ *                 type: string
+ *               Followup_idFollowup:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Activity created
  */
 exports.createActivity = async (req, res, next) => {
   try {
-    const activity = await Activity.create(req.body);
+        const userId = req.user.id;
+         const activity = await Activity.create({
+            title: req.body.title,
+            detail:req.body.detail,
+            created_date:req.body.created_date,
+            start_date:req.body.start_date,
+            end_date:req.body.end_date,
+            priority:req.body.priority,
+            tags:req.body.tags,
+            last_action: req.body.last_action,
+            last_action_date: req.body.last_action_date,
+            next_action: req.body.next_action,
+            next_action_date: req.body.next_action_date,
+            Followup_idFollowup: req.body.Followup_idFollowup,
+            Business_idBusiness: req.body.Business_idBusiness,
+
+            _idUser: userId
+        });
 
       // Recompute Followup score after creating the Activity
         const followupId = req.body.Followup_idFollowup || req.body.idFollowup;
@@ -42,9 +84,9 @@ exports.createActivity = async (req, res, next) => {
 
 /**
  * @swagger
- * /activities:
+ * /activities/get-all:
  *   get:
- *     summary: Get all activities (paginated)
+ *     summary: Get all activities of the logged-in user (paginated) 
  *     tags: [Activities]
  *     security:
  *       - bearerAuth: []
@@ -61,9 +103,11 @@ exports.createActivity = async (req, res, next) => {
  */
 exports.getAllActivities = async (req, res, next) => {
   try {
+    const userId = req.user.id;
+
     const { limit, offset } = paginate(req);
     const activities = await Activity.findAndCountAll({
-      where: { is_archived: false },
+      where: { is_archived: false, _idUser:userId },
       include: [Followup],
       limit,
       offset
@@ -77,7 +121,7 @@ exports.getAllActivities = async (req, res, next) => {
 
 /**
  * @swagger
- * /activities/{id}:
+ * /activities/get-by-id/{id}:
  *   get:
  *     summary: Get an activity by ID
  *     tags: [Activities]
@@ -190,7 +234,7 @@ exports.getActivitiesByBusinessId = async (req, res, next) => {
 
 /**
  * @swagger
- * /activities/{id}:
+ * /activities/update/{id}:
  *   put:
  *     summary: Update an activity
  *     tags: [Activities]
@@ -206,7 +250,32 @@ exports.getActivitiesByBusinessId = async (req, res, next) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Activity'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               detail:
+ *                 type: string
+ *               created_date:
+ *                 type: string
+ *               start_date:
+ *                 type: string
+ *               end_date:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *               priority:
+ *                 type: string
+ *               last_action:
+ *                 type: string
+ *               last_action_date:
+ *                 type: string
+ *               next_action:
+ *                 type: string
+ *               next_action_date:
+ *                 type: string
+ *               Followup_idFollowup:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Activity updated
@@ -224,7 +293,7 @@ exports.updateActivity = async (req, res, next) => {
 
 /**
  * @swagger
- * /activities/{id}:
+ * /activities/delete/{id}:
  *   delete:
  *     summary: Archive an activity
  *     tags: [Activities]

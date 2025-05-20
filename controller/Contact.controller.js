@@ -1,10 +1,12 @@
 const { Contact, Lead, Country } = require('../model');
 const createError = require('../middleware/error');
 const logger = require('./utils/logger.utils');
+const { Op } = require('sequelize');
+
 
 /**
  * @swagger
- * /contacts:
+ * /contacts/create:
  *   post:
  *     summary: Create a new contact
  *     tags: [Contacts]
@@ -22,7 +24,6 @@ const logger = require('./utils/logger.utils');
  *               last_name: { type: string }
  *               email: { type: string }
  *               phone: { type: string }
- *               weight: { type: number }
  *               position: { type: string }
  *               language: { type: object }
  *               notes: { type: string }
@@ -48,7 +49,7 @@ exports.createContact = async (req, res, next) => {
 
 /**
  * @swagger
- * /contacts:
+ * /contacts/get-all:
  *   get:
  *     summary: Get all contacts (paginated)
  *     tags: [Contacts]
@@ -77,7 +78,7 @@ exports.getAllContacts = async (req, res, next) => {
           model: Lead,
           required: true,
           where: {
-            [db.Sequelize.Op.or]: [
+            [Op.or]: [
               { created_by_user_id: req.user.id },
               { assigned_to_user_id: req.user.id }
             ]
@@ -98,7 +99,7 @@ exports.getAllContacts = async (req, res, next) => {
 
 /**
  * @swagger
- * /get-contacts-by-lead/{leadId}:
+ * /contacts/get-contacts-by-lead/{leadId}:
  *   get:
  *     summary: Get all contacts for a specific lead
  *     tags: [Contacts]
@@ -140,7 +141,7 @@ exports.getAllContacts = async (req, res, next) => {
  */
 exports.getContactsByLead = async (req, res, next) => {
   try {
-    const { limit, offset } = paginate(req);
+    const { limit, offset } = require("./utils/paginate").paginate(req);
     const { leadId } = req.params;
 
     const contacts = await Contact.findAndCountAll({
@@ -164,7 +165,7 @@ exports.getContactsByLead = async (req, res, next) => {
 };
 /**
  * @swagger
- * /contacts/{id}:
+ * /contacts/get-by-id/{id}:
  *   get:
  *     summary: Get contact by ID
  *     tags: [Contacts]
@@ -200,7 +201,7 @@ exports.getContactById = async (req, res, next) => {
 
 /**
  * @swagger
- * /contacts/{id}:
+ * /contacts/update/{id}:
  *   put:
  *     summary: Update a contact
  *     tags: [Contacts]
@@ -237,7 +238,7 @@ exports.updateContact = async (req, res, next) => {
 
 /**
  * @swagger
- * /contacts/{id}:
+ * /contacts/delete/{id}:
  *   delete:
  *     summary: Archive a contact (soft delete)
  *     tags: [Contacts]
@@ -270,7 +271,7 @@ exports.archiveContact = async (req, res, next) => {
 
 /**
  * @swagger
- * /contacts/meetings/{meetingId}:
+ * /contacts/get-by-meeting/{meetingId}:
  *   get:
  *     summary: Get paginated contacts linked to a meeting
  *     tags: [ContactHasMeeting]

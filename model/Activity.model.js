@@ -5,6 +5,10 @@ const db = require('../config/db')
   idActivity: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   title: { type: DataTypes.STRING },
   detail: { type: DataTypes.STRING },
+  status: { type: DataTypes.STRING, ////COMPLETED, PENDING, IN_PROGRESS, NOT_STARTED, WAITING_FEEDBACK
+    defaultValue: "IN_PROGRESS"
+   },
+
   created_date: {
     type: DataTypes.DATE,
     allowNull: false,

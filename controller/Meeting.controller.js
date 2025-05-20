@@ -1,12 +1,11 @@
-const { Meeting, Followup } = require('../model');
-const createError = require('../middleware/error');
-const { paginate } = require('./utils/paginate');
-const scoring = require('./utils/scoring.utils')
-
+const { Meeting, Followup } = require("../model");
+const createError = require("../middleware/error");
+const { paginate } = require("./utils/paginate");
+const scoring = require("./utils/scoring.utils");
 
 /**
  * @swagger
- * /meetings:
+ * /meetings/create:
  *   post:
  *     summary: Create a new meeting
  *     tags: [Meetings]
@@ -17,32 +16,60 @@ const scoring = require('./utils/scoring.utils')
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Meeting'
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *               summary:
+ *                 type: string
+ *               next_action:
+ *                 type: string
+ *               next_action_date:
+ *                 type: string
+ *               due_date:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               Followup_idFollowup:
+ *                 type: number
+ *
  *     responses:
  *       201:
  *         description: Meeting created
  */
 exports.createMeeting = async (req, res, next) => {
   try {
-    const meeting = await Meeting.create(req.body);
-   
-     // Recompute Followup score after creating the Activity
+    const userId = req.user.id;
+    const meeting = await Meeting.create({
+      date: req.body.assignedToUser || userId,
+      created_date: Date.now(),
+      summary: req.body.summary,
+      next_action: req.body.next_action,
+      next_action: req.body.next_action,
+      next_action_date: req.body.next_action_date,
+      due_date:req.body.due_date,
+      Followup_idFollowup: req.body.Followup_idFollowup,
+      Business_idBusiness: req.body.Business_idBusiness,
+      _idUser: userId,
+    });
+
+    // Recompute Followup score after creating the Activity
     const followupId = req.body.Followup_idFollowup || req.body.idFollowup;
     if (followupId) {
       await scoring.computeFollowupScore(followupId);
     }
 
-    res.status(201).json({ message: 'Meeting created', data: meeting });
+    res.status(201).json({ message: "Meeting created", data: meeting });
   } catch (error) {
-    next(createError(500, 'Create meeting error', error.message));
+    next(createError(500, "Create meeting error", error.message));
   }
 };
 
 /**
  * @swagger
- * /meetings:
+ * /meetings/get-all:
  *   get:
- *     summary: Get all meetings (paginated)
+ *     summary: Get all meetings f the logged-in user (paginated) 
  *     tags: [Meetings]
  *     security:
  *       - bearerAuth: []
@@ -59,23 +86,24 @@ exports.createMeeting = async (req, res, next) => {
  */
 exports.getAllMeetings = async (req, res, next) => {
   try {
+    const userId = req.user.id;
+
     const { limit, offset } = paginate(req);
     const meetings = await Meeting.findAndCountAll({
-      where: { is_archived: false },
+      where: { is_archived: false, _idUser:userId },
       include: [Followup],
       limit,
-      offset
+      offset,
     });
     res.status(200).json(meetings);
   } catch (error) {
-    next(createError(500, 'Fetch meetings error', error.message));
+    next(createError(500, "Fetch meetings error", error.message));
   }
 };
 
-
 /**
  * @swagger
- * /meetings/{id}:
+ * /meetings/get-by-id/{id}:
  *   get:
  *     summary: Get a meeting by ID
  *     tags: [Meetings]
@@ -94,19 +122,18 @@ exports.getMeetingById = async (req, res, next) => {
   try {
     const meeting = await Meeting.findOne({
       where: { idMeeting: req.params.id, is_archived: false },
-      include: [Followup]
+      include: [Followup],
     });
-    if (!meeting) return next(createError(404, 'Meeting not found'));
+    if (!meeting) return next(createError(404, "Meeting not found"));
     res.status(200).json(meeting);
   } catch (error) {
-    next(createError(500, 'Get meeting error', error.message));
+    next(createError(500, "Get meeting error", error.message));
   }
 };
 
-
 /**
  * @swagger
- * /meetings/{id}:
+ * /meetings/update/{id}:
  *   put:
  *     summary: Update a meeting
  *     tags: [Meetings]
@@ -130,17 +157,17 @@ exports.getMeetingById = async (req, res, next) => {
 exports.updateMeeting = async (req, res, next) => {
   try {
     await Meeting.update(req.body, {
-      where: { idMeeting: req.params.id, is_archived: false }
+      where: { idMeeting: req.params.id, is_archived: false },
     });
-    res.status(200).json({ message: 'Meeting updated' });
+    res.status(200).json({ message: "Meeting updated" });
   } catch (error) {
-    next(createError(500, 'Update meeting error', error.message));
+    next(createError(500, "Update meeting error", error.message));
   }
 };
 
 /**
  * @swagger
- * /meetings/followups/{followupId}:
+ * /meetings/get-by-followup/{followupId}:
  *   get:
  *     summary: Get paginated meetings for a followup
  *     tags: [Meetings]
@@ -164,23 +191,25 @@ exports.updateMeeting = async (req, res, next) => {
 exports.getMeetingsByFollowupId = async (req, res, next) => {
   try {
     const { followupId } = req.params;
-    const { limit, offset } = require('./utils/paginate').paginate(req);
+    const { limit, offset } = require("./utils/paginate").paginate(req);
 
     const meetings = await Meeting.findAndCountAll({
       where: { Followup_idFollowup: followupId, is_archived: false },
       limit,
-      offset
+      offset,
     });
 
     res.status(200).json(meetings);
   } catch (error) {
-    next(createError(500, 'Error fetching meetings by followup', error.message));
+    next(
+      createError(500, "Error fetching meetings by followup", error.message)
+    );
   }
 };
 
 /**
  * @swagger
- * /meetings/businesses/{businessId}:
+ * /meetings/get-by-business/{businessId}:
  *   get:
  *     summary: Get paginated meetings for a business
  *     tags: [Meetings]
@@ -204,25 +233,25 @@ exports.getMeetingsByFollowupId = async (req, res, next) => {
 exports.getMeetingsByBusinessId = async (req, res, next) => {
   try {
     const { businessId } = req.params;
-    const { limit, offset } = require('./utils/paginate').paginate(req);
+    const { limit, offset } = require("./utils/paginate").paginate(req);
 
     const meetings = await Meeting.findAndCountAll({
       where: { Business_idBusiness: businessId, is_archived: false },
       limit,
-      offset
+      offset,
     });
 
     res.status(200).json(meetings);
   } catch (error) {
-    next(createError(500, 'Error fetching meetings by business', error.message));
+    next(
+      createError(500, "Error fetching meetings by business", error.message)
+    );
   }
 };
 
-
-
 /**
  * @swagger
- * /meetings/{id}:
+ * /meetings/delete/{id}:
  *   delete:
  *     summary: Archive a meeting
  *     tags: [Meetings]
@@ -240,11 +269,14 @@ exports.getMeetingsByBusinessId = async (req, res, next) => {
 
 exports.archiveMeeting = async (req, res, next) => {
   try {
-    await Meeting.update({ is_archived: true }, {
-      where: { idMeeting: req.params.id }
-    });
-    res.status(200).json({ message: 'Meeting archived' });
+    await Meeting.update(
+      { is_archived: true },
+      {
+        where: { idMeeting: req.params.id },
+      }
+    );
+    res.status(200).json({ message: "Meeting archived" });
   } catch (error) {
-    next(createError(500, 'Archive meeting error', error.message));
+    next(createError(500, "Archive meeting error", error.message));
   }
 };

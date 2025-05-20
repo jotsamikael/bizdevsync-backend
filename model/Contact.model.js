@@ -28,15 +28,9 @@ const Contact = db.define('Contact',{
         allowNull: true,
         unique: true
     },
-    weight:{ //how decisive is he/she on a scale of 0-5
-        type: DataTypes.STRING, //enum either Decision-maker, Prescriber, Employ
-        allowNull: true,
-      
-    },
     position:{ //position held by contact within company
         type: DataTypes.STRING, 
         allowNull: true,
-       
     },
     language:{
         type: DataTypes.JSON, //json object to possibly store multiple languages

@@ -27,6 +27,13 @@ const Source = require('./Source.model.js')
 
 
 // ===============
+// Activity Relationships
+// ===============
+Activity.belongsTo(User,{foreignKey:'_idUser'})
+User.hasMany(Activity,{foreignKey:'_idUser'})
+
+
+// ===============
 // Source Relationships
 // ===============
 Lead.belongsTo(Source,{foreignKey:'_idSource'})
@@ -143,6 +150,11 @@ Contact.belongsToMany(Meeting, {
   foreignKey: 'contact_idContact',
   otherKey: 'meeting_idMeeting'
 });
+
+//User can have many meetings
+Meeting.belongsTo(User,{foreignKey: '_idUser'});
+User.hasMany(Meeting,{foreignKey: '_idUser'});
+
 
 // ===============
 // Competitor Relationships
