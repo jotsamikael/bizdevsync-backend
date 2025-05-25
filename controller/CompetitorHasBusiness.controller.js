@@ -3,40 +3,57 @@ const createError = require('../middleware/error');
 
 /**
  * @swagger
- * /competitors/{id}/link-business:
+ * /business-has-competitors/competitor-business/create:
  *   post:
- *     summary: Link a competitor to a business with attributes
+ *     summary: Link a competitor to a business with additional insights
  *     tags: [CompetitorHasBusiness]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *         description: Competitor ID
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CompetitorHasBusiness'
+ *             type: object
+ *             properties:
+ *               market_position:
+ *                 type: string
+ *                 example: "Market Leader in SME Segment"
+ *               weaknesses:
+ *                 type: string
+ *                 example: "Limited support in French-speaking regions"
+ *               strengths:
+ *                 type: string
+ *                 example: "Excellent integration with existing CRMs"
+ *               reference_clients:
+ *                 type: string
+ *                 example: "Orange, Canal+, TechSavvy Inc."
+ *               risk_level:
+ *                 type: string
+ *                 example: "High"
+ *               Competitor_idCompetitor:
+ *                 type: integer
+ *                 example: 3
+ *               Business_idBusiness:
+ *                 type: integer
+ *                 example: 12
  *     responses:
  *       201:
- *         description: Competitor linked to Business
+ *         description: Link created successfully
  */
 exports.linkCompetitorToBusiness = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { Business_idBusiness, strengths, weaknesses, risk_level } = req.body;
+    const { Business_idBusiness, strengths,market_position, weaknesses, risk_level } = req.body;
 
     const link = await CompetitorHasBusiness.create({
-      Competitor_idCompetitor: id,
-      Business_idBusiness,
-      strengths,
-      weaknesses,
-      risk_level
+      market_position: req.body.market_position,
+      weaknesses: req.body.weaknesses,
+      strengths: req.body.strengths,
+      reference_clients: req.body.reference_clients,
+      risk_level: req.body.risk_level,
+      Competitor_idCompetitor: req.body.Competitor_idCompetitor,
+      Business_idBusiness: req.body.Business_idBusiness
     });
 
     res.status(201).json({ message: 'Competitor linked to Business', data: link });
@@ -47,7 +64,7 @@ exports.linkCompetitorToBusiness = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors/{id}/link-business/{businessId}:
+ * /business-has-competitors/link-business/{businessId}/{id}:
  *   put:
  *     summary: Update the link between a competitor and a business
  *     tags: [CompetitorHasBusiness]
@@ -71,22 +88,54 @@ exports.linkCompetitorToBusiness = async (req, res, next) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CompetitorHasBusiness'
+ *             type: object
+ *             properties:
+ *               market_position:
+ *                 type: string
+ *                 example: "Top 3 in the African logistics sector"
+ *               weaknesses:
+ *                 type: string
+ *                 example: "Limited technical support"
+ *               strengths:
+ *                 type: string
+ *                 example: "Affordable pricing, large regional presence"
+ *               reference_clients:
+ *                 type: string
+ *                 example: "Transcom, QuickMove"
+ *               risk_level:
+ *                 type: string
+ *                 example: "Medium"
  *     responses:
  *       200:
  *         description: Link updated successfully
+ *       404:
+ *         description: Link not found or archived
  */
 exports.updateCompetitorBusinessLink = async (req, res, next) => {
   try {
     const { id, businessId } = req.params;
 
-    const updated = await CompetitorHasBusiness.update(req.body, {
-      where: {
-        Competitor_idCompetitor: id,
-        Business_idBusiness: businessId,
-        is_archived: false
+    // Attempt update
+    const [updated] = await CompetitorHasBusiness.update(
+      {
+        market_position: req.body.market_position,
+        weaknesses: req.body.weaknesses,
+        strengths: req.body.strengths,
+        reference_clients: req.body.reference_clients,
+        risk_level: req.body.risk_level
+      },
+      {
+        where: {
+          Competitor_idCompetitor: id,
+          Business_idBusiness: businessId,
+          is_archived: false
+        }
       }
-    });
+    );
+
+    if (updated === 0) {
+      return res.status(404).json({ message: 'Link not found or already archived' });
+    }
 
     res.status(200).json({ message: 'Link updated successfully', data: updated });
   } catch (error) {
@@ -96,7 +145,7 @@ exports.updateCompetitorBusinessLink = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors/{id}/unlink-business/{businessId}:
+ * /business-has-competitors/unlink-business/{businessId}/{id}:
  *   delete:
  *     summary: Unlink a competitor from a business (soft delete)
  *     tags: [CompetitorHasBusiness]
@@ -138,7 +187,7 @@ exports.unlinkCompetitorFromBusiness = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors/{id}/businesses:
+ * /business-has-competitors/businesses/{id}:
  *   get:
  *     summary: Get all businesses linked to a competitor
  *     tags: [CompetitorHasBusiness]

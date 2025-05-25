@@ -3,12 +3,15 @@ const router = express.Router();
 const controller = require('../controller/CompetitorHasBusiness.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
-
+const CreateCompetitorHasBusinessSchema = require('../validator/competitorHasBusiness.validator')
 const allowedRoles = ['enterprise_admin', 'solo_biz_dev', 'biz_dev'];
+const validate = require('../middleware/validator.middleware');
 
-router.post('/competitors/:id/link-business', authMiddleware, requireRole(allowedRoles), controller.linkCompetitorToBusiness);
-router.put('/competitors/:id/link-business/:businessId', authMiddleware, requireRole(allowedRoles), controller.updateCompetitorBusinessLink);
-router.delete('/competitors/:id/unlink-business/:businessId', authMiddleware, requireRole(allowedRoles), controller.unlinkCompetitorFromBusiness);
-router.get('/competitors/:id/businesses', authMiddleware, requireRole(allowedRoles), controller.getCompetitorBusinesses);
+
+
+router.post('/link-business/:id', authMiddleware, requireRole(allowedRoles), validate(CreateCompetitorHasBusinessSchema), controller.linkCompetitorToBusiness);
+router.put('/link-business/:businessId/:id', authMiddleware, requireRole(allowedRoles), controller.updateCompetitorBusinessLink);
+router.delete('/unlink-business/:businessId/:id', authMiddleware, requireRole(allowedRoles), controller.unlinkCompetitorFromBusiness);
+router.get('/businesses/:id', authMiddleware, requireRole(allowedRoles), controller.getCompetitorBusinesses);
 
 module.exports = router;

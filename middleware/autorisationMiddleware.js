@@ -14,7 +14,7 @@ const requireRole = (roles) => {
     }
 
     if (!allowedRoles.includes(user.role)) {
-      //console.log('user role is: '+user.role)
+     console.log('user role is: '+user.role)
       //console.log(allowedRoles)
       return next(createError(403, 'Forbidden: You do not have access to this resource'));
     }

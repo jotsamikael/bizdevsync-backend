@@ -42,6 +42,9 @@ const logger = require("./utils/logger.utils");
  *               avatar:
  *                 type: string
  *                 format: binary
+ *               role:
+ *                 type: string
+ *                 enum: [solo_biz_dev, enterprise_admin]
  *     responses:
  *       201:
  *         description: User created successfully
@@ -68,7 +71,7 @@ exports.signup = async (req, res, next) => {
       enterprise_id: req.body.enterprise_id,
       is_activated: false,
       is_verified: false,
-      role: "solo_biz_dev",
+      role: req.body.role,
     });
 
     //create activation code

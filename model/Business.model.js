@@ -4,7 +4,17 @@ const db = require('../config/db')
  const Business = db.define('Business', {
   idBusiness: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   need: { type: DataTypes.STRING },
+  created_date: { type: DataTypes.STRING },
+  stage: { type: DataTypes.STRING,
+            defaultValue:"OPPORTUNITY"
+   }, //General stages: "OPPORTUNITY", "PORPOSAL_SENT", "NEGOCIATION", "WON" etc
   approach: { type: DataTypes.STRING },
+  engagement_score:{
+     type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0 //Computed from activities/meetings frequency
+  },
+  client_constraints:{ type: DataTypes.STRING },
   business_type: { type: DataTypes.STRING },
   case_level: { type: DataTypes.STRING },
   total_turnover: { type: DataTypes.STRING },

@@ -4,6 +4,7 @@ const controller = require('../controller/Lead.controller');
 const upload = require('../controller/utils/fileupload')
 const {CreateLeadSchema, UpdateLeadSchema}  = require('../validator/lead.validator')
 const validate = require('../middleware/validator.middleware')
+
 const authMiddleware = require('../middleware/authMiddleware');
 
 const requireRole = require('../middleware/autorisationMiddleware');

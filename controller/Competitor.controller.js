@@ -5,7 +5,7 @@ const { paginate } = require('./utils/paginate');
 
 /**
  * @swagger
- * /competitors:
+ * /competitors/create:
  *   post:
  *     summary: Create a new competitor
  *     tags: [Competitors]
@@ -16,16 +16,51 @@ const { paginate } = require('./utils/paginate');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Competitor'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "TechNova"
+ *               sector:
+ *                 type: string
+ *                 example: "Cloud Services"
+ *               headquater_location:
+ *                 type: string
+ *                 example: "San Francisco, USA"
+ *               reference_clients:
+ *                 type: string
+ *                 example: "Acme Corp, GlobalTel, Fintech Group"
+ *               product_line:
+ *                 type: string
+ *                 example: "Enterprise cloud storage, backup solutions"
+ *               website:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "https://www.technova.com"
+ *               notes:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Known for aggressive pricing and strong customer support."
  *     responses:
  *       201:
  *         description: Competitor created successfully
  */
+
 exports.createCompetitor = async (req, res, next) => {
   try {
+    const userId = req.user.id;
+
+      // Create competitor
     const competitor = await Competitor.create({
-      ...req.body,
-      createdDate: new Date().toISOString()
+      name: req.body.name,
+      sector: req.body.sector,
+      headquater_location: req.body.headquater_location,
+      reference_clients: req.body.reference_clients,
+      product_line: req.body.product_line,
+      website: req.body.website,
+      notes: req.body.notes,
+      last_updated: new Date().toISOString(),
+      _idUser: userId
     });
 
     res.status(201).json({ message: 'Competitor created successfully', data: competitor });
@@ -38,7 +73,7 @@ exports.createCompetitor = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors:
+ * /competitors/get-all:
  *   get:
  *     summary: Get all competitors (paginated)
  *     tags: [Competitors]
@@ -74,7 +109,7 @@ exports.getAllCompetitors = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors/{id}:
+ * /competitors/get-by-id/{id}:
  *   get:
  *     summary: Get a competitor by ID
  *     tags: [Competitors]
@@ -107,7 +142,7 @@ exports.getCompetitorById = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors/{id}:
+ * /competitors/update/{id}:
  *   put:
  *     summary: Update a competitor
  *     tags: [Competitors]
@@ -117,22 +152,69 @@ exports.getCompetitorById = async (req, res, next) => {
  *       - name: id
  *         in: path
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
+ *         description: ID of the competitor to update
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Competitor'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "TechNova"
+ *               sector:
+ *                 type: string
+ *                 example: "Cloud Services"
+ *               headquater_location:
+ *                 type: string
+ *                 example: "San Francisco, USA"
+ *               reference_clients:
+ *                 type: string
+ *                 example: "Acme Corp, GlobalTel"
+ *               product_line:
+ *                 type: string
+ *                 example: "Backup solutions, cloud storage"
+ *               website:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "https://www.technova.com"
+ *               notes:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Leading in government contracts"
  *     responses:
  *       200:
- *         description: Competitor updated
+ *         description: Competitor updated successfully
+ *       404:
+ *         description: Competitor not found or already archived
  */
 exports.updateCompetitor = async (req, res, next) => {
   try {
-    await Competitor.update(req.body, {
-      where: { idCompetitor: req.params.id, is_archived: false }
-    });
+     // Perform update
+    const [updatedRows] = await Competitor.update(
+      {
+        name: req.body.name,
+        sector: req.body.sector,
+        headquater_location: req.body.headquater_location,
+        reference_clients: req.body.reference_clients,
+        product_line: req.body.product_line,
+        website: req.body.website,
+        notes: req.body.notes
+      },
+      {
+        where: {
+          idCompetitor: req.params.id,
+          is_archived: false
+        }
+      }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ message: 'Competitor not found or already archived' });
+    }
 
     res.status(200).json({ message: 'Competitor updated successfully' });
   } catch (error) {
@@ -143,7 +225,7 @@ exports.updateCompetitor = async (req, res, next) => {
 
 /**
  * @swagger
- * /competitors/{id}:
+ * /competitors/delete/{id}:
  *   delete:
  *     summary: Archive a competitor
  *     tags: [Competitors]
@@ -177,7 +259,7 @@ exports.archiveCompetitor = async (req, res, next) => {
  * /competitors/businesses/{businessId}:
  *   get:
  *     summary: Get paginated competitors linked to a business
- *     tags: [CompetitorHasBusiness]
+ *     tags: [Competitors]
  *     security:
  *       - bearerAuth: []
  *     parameters:

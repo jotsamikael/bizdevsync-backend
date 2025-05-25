@@ -7,7 +7,7 @@ const db = require('../config/db')
     primaryKey: true,
     autoIncrement: true
   },
-  label: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false
   },

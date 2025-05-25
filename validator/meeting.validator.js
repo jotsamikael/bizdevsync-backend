@@ -7,7 +7,8 @@ const CreateMeetingSchema = Joi.object({
   next_action: Joi.string().required(),
   next_action_date: Joi.string().required(),
   due_date:Joi.string().required(),
-  Followup_idFollowup: Joi.number().optional()
+  Followup_idFollowup: Joi.number().optional(),
+  Business_idBusiness:Joi.number().optional()
 
 });
 

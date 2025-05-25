@@ -32,7 +32,8 @@ const scoring = require("./utils/scoring.utils");
  *                 type: string
  *               Followup_idFollowup:
  *                 type: number
- *
+ *               Business_idBusiness:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Meeting created
@@ -42,7 +43,7 @@ exports.createMeeting = async (req, res, next) => {
     const userId = req.user.id;
     const meeting = await Meeting.create({
       date: req.body.assignedToUser || userId,
-      created_date: Date.now(),
+      created_date: new Date().toISOString(),
       summary: req.body.summary,
       next_action: req.body.next_action,
       next_action: req.body.next_action,

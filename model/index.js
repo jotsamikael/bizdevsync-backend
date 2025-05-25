@@ -160,6 +160,11 @@ User.hasMany(Meeting,{foreignKey: '_idUser'});
 // Competitor Relationships
 // ===============
 
+//Competitor is created by user
+Competitor.belongsTo(User,{foreignKey: '_idUser'})
+User.hasMany(Competitor,{foreignKey: '_idUser'});
+
+
 // Business has many Competitors (Many-to-Many)
 Business.belongsToMany(Competitor, {
   through: CompetitorHasBusiness,
@@ -196,6 +201,11 @@ Order.belongsTo(Plan, { foreignKey: 'plan_id' });
 User.hasMany(Order, { foreignKey: 'user_id' });
 Plan.hasMany(Order, { foreignKey: 'plan_id' });
 Gateway.hasMany(Order, { foreignKey: 'gateway_id' });
+
+
+//Enterprise plan
+Enterprise.belongsTo(Plan, { foreignKey: 'plan_id' });
+Plan.hasMany(Enterprise, { foreignKey: 'plan_id' });
 
 
 module.exports ={

@@ -2,10 +2,12 @@ const { Business, Lead, User, Activity, Meeting } = require('../model');
 const createError = require('../middleware/error');
 const logger = require('./utils/logger.utils');
 const { paginate } = require('./utils/paginate');
+const { Op } = require('sequelize');
+
 
 /**
  * @swagger
- * /businesses:
+ * /businesses/create:
  *   post:
  *     summary: Create a new business opportunity
  *     tags: [Businesses]
@@ -16,7 +18,62 @@ const { paginate } = require('./utils/paginate');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Business'
+ *             type: object
+ *             properties:
+ *               need:
+ *                 type: string
+ *                 example: "Improve supply chain efficiency"
+ *               approach:
+ *                 type: string
+ *                 example: "Product presentation followed by workshop"
+ *               stage:
+ *                 type: string
+ *                 example: "opportunity"
+ *               client_constraints:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Client requires government certification"
+ *               business_type:
+ *                 type: string
+ *                 example: "Software subscription"
+ *               case_level:
+ *                 type: string
+ *                 example: "Strategic"
+ *               total_turnover:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "3M EUR"
+ *               potential_time_for_delivery:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Q3 2025"
+ *               case_started_date:
+ *                 type: string
+ *                 example: "2025-05-19"
+ *               current_supplier:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Oracle"
+ *               previous_vc:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "None"
+ *               turnover_signable:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "500K EUR"
+ *               notes:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Client showed interest in our new integration API."
+ *               closed_date:
+ *                 type: string
+ *                 format: date
+ *                 nullable: true
+ *                 example: "2025-08-01"
+ *               Lead_idLead:
+ *                 type: integer
+ *                 example: 7
  *     responses:
  *       201:
  *         description: Business created successfully
@@ -24,9 +81,25 @@ const { paginate } = require('./utils/paginate');
 exports.createBusiness = async (req, res, next) => {
   try {
     const userId = req.user.id;
+
     const business = await Business.create({
-      ...req.body,
-      created_by_user_id: userId
+      need: req.body.need,
+      approach: req.body.approach,
+      stage: req.body.stage,
+      client_constraints: req.body.client_constraints,
+      business_type: req.body.business_type,
+      case_level: req.body.case_level,
+      total_turnover: req.body.total_turnover,
+      potential_time_for_delivery: req.body.potential_time_for_delivery,
+      case_started_date: req.body.case_started_date,
+      current_supplier: req.body.current_supplier,
+      previous_vc: req.body.previous_vc,
+      turnover_signable: req.body.turnover_signable,
+      notes: req.body.notes,
+      closed_date: req.body.closed_date,
+      Lead_idLead: req.body.Lead_idLead,
+      created_by_user_id: userId,
+      created_date: new Date().toISOString()
     });
     res.status(201).json({ message: 'Business created successfully', data: business });
     logger.info(`Business created: ${business.idBusiness}`);
@@ -38,7 +111,7 @@ exports.createBusiness = async (req, res, next) => {
 
 /**
  * @swagger
- * /businesses:
+ * /businesses/get-all:
  *   get:
  *     summary: Get all businesses created by the logged-in user (paginated)
  *     tags: [Businesses]
@@ -73,7 +146,7 @@ exports.getAllBusinesses = async (req, res, next) => {
 
 /**
  * @swagger
- * /businesses/{id}:
+ * /businesses/get-by-id/{id}:
  *   get:
  *     summary: Get a business by ID
  *     tags: [Businesses]
@@ -96,7 +169,7 @@ exports.getBusinessById = async (req, res, next) => {
           model: Lead,
           required: true,
           where: {
-            [db.Sequelize.Op.or]: [
+            [Op.or]: [
               { created_by_user_id: req.user.id },
               { assigned_to_user_id: req.user.id }
             ]
@@ -113,7 +186,7 @@ exports.getBusinessById = async (req, res, next) => {
 
 /**
  * @swagger
- * /businesses/{id}:
+ * /businesses/update/{id}:
  *   put:
  *     summary: Update a business
  *     tags: [Businesses]
@@ -129,7 +202,62 @@ exports.getBusinessById = async (req, res, next) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Business'
+ *             type: object
+ *             properties:
+ *               need:
+ *                 type: string
+ *                 example: "Improve supply chain efficiency"
+ *               approach:
+ *                 type: string
+ *                 example: "Product presentation followed by workshop"
+ *               stage:
+ *                 type: string
+ *                 example: "opportunity"
+ *               client_constraints:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Client requires government certification"
+ *               business_type:
+ *                 type: string
+ *                 example: "Software subscription"
+ *               case_level:
+ *                 type: string
+ *                 example: "Strategic"
+ *               total_turnover:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "3M EUR"
+ *               potential_time_for_delivery:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Q3 2025"
+ *               case_started_date:
+ *                 type: string
+ *                 example: "2025-05-19"
+ *               current_supplier:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Oracle"
+ *               previous_vc:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "None"
+ *               turnover_signable:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "500K EUR"
+ *               notes:
+ *                 type: string
+ *                 nullable: true
+ *                 example: "Client showed interest in our new integration API."
+ *               closed_date:
+ *                 type: string
+ *                 format: date
+ *                 nullable: true
+ *                 example: "2025-08-01"
+ *               Lead_idLead:
+ *                 type: integer
+ *                 example: 7
  *     responses:
  *       200:
  *         description: Business updated
@@ -147,7 +275,7 @@ exports.updateBusiness = async (req, res, next) => {
 
 /**
  * @swagger
- * /businesses/{id}:
+ * /businesses/delete/{id}:
  *   delete:
  *     summary: Archive a business
  *     tags: [Businesses]
@@ -176,7 +304,7 @@ exports.archiveBusiness = async (req, res, next) => {
 
 /**
  * @swagger
- * /businesses/{businessId}/next-action:
+ * /businesses/next-action/{businessId}:
  *   get:
  *     summary: Get next scheduled action (activity/meeting) for a business
  *     tags: [Businesses]
@@ -200,7 +328,7 @@ exports.getNextActionForBusiness = async (req, res, next) => {
     const nextActivity = await Activity.findOne({
       where: {
         Business_idBusiness: businessId,
-        next_action_date: { [db.Sequelize.Op.gt]: new Date() },
+        next_action_date: { [Op.gt]: new Date() },
         is_archived: false
       },
       order: [['next_action_date', 'ASC']]
@@ -209,7 +337,7 @@ exports.getNextActionForBusiness = async (req, res, next) => {
     const nextMeeting = await Meeting.findOne({
       where: {
         Business_idBusiness: businessId,
-        next_action_date: { [db.Sequelize.Op.gt]: new Date() },
+        next_action_date: { [Op.gt]: new Date() },
         is_archived: false
       },
       order: [['next_action_date', 'ASC']]
@@ -228,7 +356,7 @@ exports.getNextActionForBusiness = async (req, res, next) => {
 
 /**
  * @swagger
- * /businesses/{businessId}/overdue-actions:
+ * /businesses/overdue-actions/{businessId}:
  *   get:
  *     summary: Get overdue actions (activity/meeting) for a business
  *     tags: [Businesses]
@@ -252,7 +380,8 @@ exports.getOverdueActionsForBusiness = async (req, res, next) => {
     const overdueActivities = await Activity.findAll({
       where: {
         Business_idBusiness: businessId,
-        next_action_date: { [db.Sequelize.Op.lt]: new Date() },
+        status:{ [Op.ne]: "COMPLETED" }, // select rows where status is not complete, [Op.in]: ["PENDING", "IN_PROGRESS", "NOT_STARTED", "WAITING_FEEDBACK"]: include only certain status 
+        end_date: { [Op.lt]: new Date() },
         is_archived: false
       }
     });
@@ -260,11 +389,11 @@ exports.getOverdueActionsForBusiness = async (req, res, next) => {
     const overdueMeetings = await Meeting.findAll({
       where: {
         Business_idBusiness: businessId,
-        next_action_date: { [db.Sequelize.Op.lt]: new Date() },
+        status:{ [Op.ne]: "COMPLETED" },
+        due_date: { [Op.lt]: new Date() },
         is_archived: false
       }
     });
-
     res.status(200).json({
       overdue_activities: overdueActivities,
       overdue_meetings: overdueMeetings

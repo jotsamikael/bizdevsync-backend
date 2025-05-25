@@ -12,8 +12,8 @@ const CreateActivitySchema = Joi.object({
   next_action: Joi.string().required(),
   last_action_date: Joi.date().required(),
   next_action_date: Joi.date().required(),
-  Followup_idFollowup: Joi.number().optional()
-
+  Followup_idFollowup: Joi.number().optional(),
+ Business_idBusiness:Joi.number().required()
 });
 
 module.exports = { CreateActivitySchema };

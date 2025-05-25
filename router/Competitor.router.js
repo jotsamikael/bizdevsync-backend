@@ -8,11 +8,11 @@ const requireRole = require('../middleware/autorisationMiddleware');
 
 const allowedRoles = ['enterprise_admin', 'solo_biz_dev','biz_dev'];
 
-router.post('/competitors', authMiddleware, requireRole(allowedRoles), validate(CreateCompetitorSchema), controller.createCompetitor);
-router.get('/competitors', authMiddleware, requireRole(allowedRoles), controller.getAllCompetitors);
-router.get('/competitors/:id', authMiddleware, requireRole(allowedRoles), controller.getCompetitorById);
-router.put('/competitors/:id', authMiddleware, requireRole(allowedRoles), controller.updateCompetitor);
-router.delete('/competitors/:id', authMiddleware, requireRole(allowedRoles), controller.archiveCompetitor);
-router.get('/competitors/businesses/:businessId', controller.getCompetitorsByBusinessId);
+router.post('/create', authMiddleware, requireRole(allowedRoles), validate(CreateCompetitorSchema), controller.createCompetitor);
+router.get('/get-all', authMiddleware, requireRole(allowedRoles), controller.getAllCompetitors);
+router.get('/get-by-id/:id', authMiddleware, requireRole(allowedRoles), controller.getCompetitorById);
+router.put('/update/:id', authMiddleware, requireRole(allowedRoles), controller.updateCompetitor);
+router.delete('/delete/:id', authMiddleware, requireRole(allowedRoles), controller.archiveCompetitor);
+router.get('/get-by-business/:businessId', controller.getCompetitorsByBusinessId);
 
 module.exports = router;

@@ -28,7 +28,7 @@ const CompetitorRouter =  require('./router/Competitor.router');
 const BusinessHasCompetitorRouter =  require('./router/BusinessHasCompetitor.router');
 const ContactHasMeetingRouter =  require('./router/ContactHasMeeting.router');
 const SourceRouter =  require('./router/Source.router');
-
+const BusinessRouter = require('./router/Business.router');
 
 //port
 const PORT = ENV.PORT || 8889;
@@ -64,6 +64,8 @@ app.use('/api/activities', ActivityRouter);
 app.use('/api/followups', FollowupRouter);
 app.use('/api/competitors', CompetitorRouter);
 app.use('/api/business-has-competitors', BusinessHasCompetitorRouter);
+app.use('/api/businesses', BusinessRouter);
+
 app.use('/api/contact-has-meeting', ContactHasMeetingRouter);
 
 app.use('/api/sources', SourceRouter);

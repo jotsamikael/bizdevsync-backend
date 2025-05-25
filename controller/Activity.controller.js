@@ -45,6 +45,8 @@ const scoring = require('./utils/scoring.utils')
  *                 type: string
  *               Followup_idFollowup:
  *                 type: number
+ *               Business_idBusiness:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Activity created
@@ -55,7 +57,7 @@ exports.createActivity = async (req, res, next) => {
          const activity = await Activity.create({
             title: req.body.title,
             detail:req.body.detail,
-            created_date:req.body.created_date,
+            created_date: new Date().toISOString(),
             start_date:req.body.start_date,
             end_date:req.body.end_date,
             priority:req.body.priority,
