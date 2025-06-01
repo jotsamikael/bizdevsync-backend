@@ -1,6 +1,8 @@
 const cron = require('node-cron');
 const User = require('../models/User');
 const Plan = require('../models/Plan');
+const logger = require('../controller/utils/logger.utils')
+
 
 cron.schedule('0 0 * * *', async () => {
   const now = new Date();
@@ -17,6 +19,6 @@ cron.schedule('0 0 * * *', async () => {
     await user.save();
     // optionally send an email
   }
-
+  logger.info(`Checked and downgraded ${expiredUsers.length} expired users.`)
   console.log(`Checked and downgraded ${expiredUsers.length} expired users.`);
 });

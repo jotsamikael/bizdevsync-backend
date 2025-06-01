@@ -71,12 +71,16 @@ const { Op } = require('sequelize');
  *                 format: date
  *                 nullable: true
  *                 example: "2025-08-01"
- *               Lead_idLead:
+ *               _idLead:
  *                 type: integer
  *                 example: 7
  *     responses:
  *       201:
  *         description: Business created successfully
+  *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Business'
  */
 exports.createBusiness = async (req, res, next) => {
   try {
@@ -127,6 +131,17 @@ exports.createBusiness = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of businesses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Business'
  */
 exports.getAllBusinesses = async (req, res, next) => {
   try {
@@ -181,6 +196,57 @@ exports.getBusinessById = async (req, res, next) => {
     res.status(200).json(business);
   } catch (error) {
     next(createError(500, 'Could not get business', error.message));
+  }
+};
+
+/**
+ * @swagger
+ * /businesses/get-by-lead-id/{idLead}:
+ *   get:
+ *     summary: Get a business by lead id
+ *     tags: [Businesses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: idLead
+ *         in: path
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: List of businesses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Business'
+ */
+exports.getBusinessByLeadId = async (req, res, next) => {
+  try {
+    const { limit, offset } = paginate(req);
+     const businesses = await Business.findAndCountAll({
+      where: { created_by_user_id: req.user.id, _idLead: req.params.idLead ,is_archived: false },
+      include: [Lead],
+      limit,
+      offset
+    });
+   
+    if (!businesses) return next(createError(404, 'No business  found'));
+    res.status(200).json(businesses);
+  } catch (error) {
+    next(createError(500, 'Could not get business(es)', error.message));
   }
 };
 
@@ -255,7 +321,7 @@ exports.getBusinessById = async (req, res, next) => {
  *                 format: date
  *                 nullable: true
  *                 example: "2025-08-01"
- *               Lead_idLead:
+ *               _idLead:
  *                 type: integer
  *                 example: 7
  *     responses:
@@ -327,7 +393,7 @@ exports.getNextActionForBusiness = async (req, res, next) => {
 
     const nextActivity = await Activity.findOne({
       where: {
-        Business_idBusiness: businessId,
+        _idBusiness: businessId,
         next_action_date: { [Op.gt]: new Date() },
         is_archived: false
       },
@@ -336,7 +402,7 @@ exports.getNextActionForBusiness = async (req, res, next) => {
 
     const nextMeeting = await Meeting.findOne({
       where: {
-        Business_idBusiness: businessId,
+        _idBusiness: businessId,
         next_action_date: { [Op.gt]: new Date() },
         is_archived: false
       },
@@ -379,7 +445,7 @@ exports.getOverdueActionsForBusiness = async (req, res, next) => {
 
     const overdueActivities = await Activity.findAll({
       where: {
-        Business_idBusiness: businessId,
+        _idBusiness: businessId,
         status:{ [Op.ne]: "COMPLETED" }, // select rows where status is not complete, [Op.in]: ["PENDING", "IN_PROGRESS", "NOT_STARTED", "WAITING_FEEDBACK"]: include only certain status 
         end_date: { [Op.lt]: new Date() },
         is_archived: false
@@ -388,7 +454,7 @@ exports.getOverdueActionsForBusiness = async (req, res, next) => {
 
     const overdueMeetings = await Meeting.findAll({
       where: {
-        Business_idBusiness: businessId,
+        _idBusiness: businessId,
         status:{ [Op.ne]: "COMPLETED" },
         due_date: { [Op.lt]: new Date() },
         is_archived: false

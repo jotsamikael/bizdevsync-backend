@@ -35,21 +35,10 @@ const generateInvoice = () => 'INV-' + Math.floor(100000 + Math.random() * 90000
  *     responses:
  *       201:
  *         description: Order created successfully, with payment instructions
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 order:
- *                   $ref: '#/components/schemas/Order'
- *                 gateway_instructions:
- *                   type: object
- *       404:
- *         description: Plan or gateway not found or inactive
- *       500:
- *         description: Error creating subscription order
+  *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Order'
  */
 exports.createOrder = async (req, res, next) => {
   const { plan_id, gateway_id } = req.body;

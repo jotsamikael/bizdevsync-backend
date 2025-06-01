@@ -30,9 +30,9 @@ const scoring = require("./utils/scoring.utils");
  *                 type: string
  *               title:
  *                 type: string
- *               Followup_idFollowup:
+ *               _idFollowup:
  *                 type: number
- *               Business_idBusiness:
+ *               _idBusiness:
  *                 type: number
  *     responses:
  *       201:
@@ -150,7 +150,24 @@ exports.getMeetingById = async (req, res, next) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Meeting'
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *               summary:
+ *                 type: string
+ *               next_action:
+ *                 type: string
+ *               next_action_date:
+ *                 type: string
+ *               due_date:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               _idFollowup:
+ *                 type: number
+ *               _idBusiness:
+ *                 type: number
  *     responses:
  *       200:
  *         description: Meeting updated
@@ -230,6 +247,17 @@ exports.getMeetingsByFollowupId = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Paginated list of meetings
+  *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Meeting'
  */
 exports.getMeetingsByBusinessId = async (req, res, next) => {
   try {
@@ -266,8 +294,11 @@ exports.getMeetingsByBusinessId = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Meeting archived
+  *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Meeting'
  */
-
 exports.archiveMeeting = async (req, res, next) => {
   try {
     await Meeting.update(

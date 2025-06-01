@@ -2,8 +2,8 @@ const {DataTypes} = require('sequelize')
 const db = require('../config/db')
 
  const CompetitorHasBusiness = db.define('CompetitorHasBusiness', {
-  Competitor_idCompetitor: { type: DataTypes.INTEGER },
-  Business_idBusiness: { type: DataTypes.INTEGER },
+  _idCompetitor: { type: DataTypes.INTEGER },
+  _idBusiness: { type: DataTypes.INTEGER },
   market_position: { type: DataTypes.STRING }, //"market leader", "niche player", "new entrant"
   weaknesses: { type: DataTypes.STRING },
   strengths: { type: DataTypes.STRING },
@@ -15,7 +15,7 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Competitor_has_Business',
-  timestamps: false,
+  timestamps: true,
 });
 module.exports = CompetitorHasBusiness
 

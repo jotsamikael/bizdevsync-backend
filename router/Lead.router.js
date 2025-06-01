@@ -10,7 +10,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 
 // Restrict to solo_biz_dev and enterprise_admin
-const canCreateLead = [ 'enterprise_admin', 'solo_biz_dev' ];
+const canCreateLead = [ 'enterprise_admin', 'solo_business_developer','business_developer' ];
 
 
 router.post('/create', authMiddleware, requireRole(canCreateLead), upload.single('logo'), validate(CreateLeadSchema), controller.createLead);

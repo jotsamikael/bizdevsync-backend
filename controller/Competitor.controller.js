@@ -44,8 +44,11 @@ const { paginate } = require('./utils/paginate');
  *     responses:
  *       201:
  *         description: Competitor created successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Competitor'
  */
-
 exports.createCompetitor = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -89,6 +92,17 @@ exports.createCompetitor = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of competitors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Competitor'
  */
 exports.getAllCompetitors = async (req, res, next) => {
   try {

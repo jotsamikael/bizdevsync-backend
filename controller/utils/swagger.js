@@ -1,5 +1,7 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const schemas = require('./swagger.schemas'); // 👈 import your schemas
+
 
 const options = {
   definition: {
@@ -40,11 +42,14 @@ const options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          in: 'header',
+          //in: 'header',
           description: 'JWT Authorization header using the Bearer scheme'
-        }
-      }
+        },
+      },
+      ...schemas.components 
+
     }
+    
   },
   apis: ['./routes/*.js', './controller/*.js'], // Swagger annotations source
 };

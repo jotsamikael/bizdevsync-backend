@@ -6,7 +6,7 @@ const validate = require('../middleware/validator.middleware');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 
-const allowedRoles = ['enterprise_admin', 'solo_biz_dev'];
+const allowedRoles = ['enterprise_admin', 'solo_business_developer'];
 
 router.post('/create', authMiddleware, requireRole(allowedRoles), validate(CreateProductSchema), controller.createProduct);
 router.get('/get-all', authMiddleware, requireRole(allowedRoles), controller.getAllProducts);

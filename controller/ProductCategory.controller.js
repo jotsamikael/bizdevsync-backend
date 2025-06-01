@@ -24,6 +24,10 @@ const logger = require('./utils/logger.utils');
  *     responses:
  *       201:
  *         description: Product category created
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/ProductCategory'
  */
 exports.createProductCategory = async (req, res, next) => {
       const userId = req.user.id;
@@ -63,6 +67,17 @@ exports.createProductCategory = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of product categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/ProductCategory'
  */
 exports.getAllProductCategories = async (req, res, next) => {
   const userId = req.user.id;

@@ -36,7 +36,6 @@ const { Op } = require('sequelize');
  *               priority:
  *                 type: string
  *                 enum: [CRITICAL, IMPORTANT, HIGH, MEDIUM, LOW]
-
  *     responses:
  *       201:
  *         description: Followup created
@@ -150,7 +149,23 @@ exports.getFollowupById = async (req, res, next) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Followup'
+ *             type: object
+ *             properties:
+ *               start_date:
+ *                 type: string
+ *                 format: date-time
+ *               _idLead:
+ *                 type: integer
+ *               outcome:
+ *                 type: string
+ *               notes:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [in_progress, completed, paused, cancelled]
+ *               priority:
+ *                 type: string
+ *                 enum: [CRITICAL, IMPORTANT, HIGH, MEDIUM, LOW]
  *     responses:
  *       200:
  *         description: Followup updated
@@ -177,15 +192,19 @@ exports.updateFollowup = async (req, res, next) => {
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
- *         in: path
+ *       - in: path
+ *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: Followup archived
+ *         description: Followup archived successfully
+  *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Followup'
  */
-
 exports.archiveFollowup = async (req, res, next) => {
   try {
     await Followup.update({ is_archived: true }, {
@@ -215,6 +234,17 @@ exports.archiveFollowup = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Next action (activity/meeting)
+  *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Meeting'
  */
 exports.getNextActionForFollowup = async (req, res, next) => {
   try {
@@ -301,24 +331,25 @@ exports.getOverdueActionsForFollowup = async (req, res, next) => {
  * @swagger
  * /followups/update-score:
  *   put:
- *     summary: Update a followup score
+ *     summary: Update followup scores
  *     tags: [Followups]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema: { type: integer }
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Meeting'
  *     responses:
  *       200:
  *         description: Followup scores updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Followup scores updated
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
  */
 exports.updateAllFollowupScores = async (req, res, next) => {
   try {

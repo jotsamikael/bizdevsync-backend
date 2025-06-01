@@ -45,15 +45,15 @@ User.hasMany(Source,{foreignKey:'_idUser'})
 // ===============
 // Enterprise Relationships
 // ===============
-Enterprise.belongsTo(Country,{foreignKey:'Country_idCountry'})
-Country.hasMany(Enterprise,{foreignKey:'Country_idCountry'})
+Enterprise.belongsTo(Country,{foreignKey:'_idCountry'})
+Country.hasMany(Enterprise,{foreignKey:'_idCountry'})
 
 
 // ===============
 // Country Relationships
 // ===============
-Country.belongsTo(Region,{foreignKey: 'Region_idRegion'});
-Region.hasMany(Country,{foreignKey: 'Region_idRegion'})
+Country.belongsTo(Region,{foreignKey: '_idRegion'});
+Region.hasMany(Country,{foreignKey: '_idRegion'})
 
 
 // ===============
@@ -61,8 +61,8 @@ Region.hasMany(Country,{foreignKey: 'Region_idRegion'})
 // ===============
 
 // User belongs to Enterprise (nullable for solobizdevs)
-User.belongsTo(Enterprise, { foreignKey: 'Enterprise_idEnterprise' });
-Enterprise.hasMany(User, { foreignKey: 'Enterprise_idEnterprise' });
+User.belongsTo(Enterprise, { foreignKey: '_idEnterprise' });
+Enterprise.hasMany(User, { foreignKey: '_idEnterprise' });
 
 User.hasMany(Activation, { foreignKey: 'user_id' });
 Activation.belongsTo(User, { foreignKey: 'user_id' });
@@ -80,60 +80,60 @@ Lead.belongsTo(User, { as: 'assignee', foreignKey: 'assigned_to_user_id' });
 User.hasMany(Lead, { as: 'assignedLeads', foreignKey: 'assigned_to_user_id' });
 
 // Lead belongs to Enterprise
-Lead.belongsTo(Enterprise, { foreignKey: 'Enterprise_idEnterprise' });
-Enterprise.hasMany(Lead, { foreignKey: 'Enterprise_idEnterprise' });
+Lead.belongsTo(Enterprise, { foreignKey: '_idEnterprise' });
+Enterprise.hasMany(Lead, { foreignKey: '_idEnterprise' });
 
 // Lead belongs to Country
-Lead.belongsTo(Country, { foreignKey: 'Country_idCountry' });
-Country.hasMany(Lead, { foreignKey: 'Country_idCountry' });
+Lead.belongsTo(Country, { foreignKey: '_idCountry' });
+Country.hasMany(Lead, { foreignKey: '_idCountry' });
 
 // ===============
 // Contact Relationships
 // ===============
 
 // Contact belongs to Lead
-Contact.belongsTo(Lead, { foreignKey: 'Lead_idLead' });
-Lead.hasMany(Contact, { foreignKey: 'Lead_idLead' });
+Contact.belongsTo(Lead, { foreignKey: '_idLead' });
+Lead.hasMany(Contact, { foreignKey: '_idLead' });
 
 // Contact belongs to Country
-Contact.belongsTo(Country, { foreignKey: 'Country_idCountry' });
-Country.hasMany(Contact, { foreignKey: 'Country_idCountry' });
+Contact.belongsTo(Country, { foreignKey: '_idCountry' });
+Country.hasMany(Contact, { foreignKey: '_idCountry' });
 
 // ===============
 // Followup Relationships
 // ===============
 
 // Followup belongs to Lead
-Followup.belongsTo(Lead, { foreignKey: 'Lead_idLead' });
-Lead.hasMany(Followup, { foreignKey: 'Lead_idLead' });
+Followup.belongsTo(Lead, { foreignKey: '_idLead' });
+Lead.hasMany(Followup, { foreignKey: '_idLead' });
 
 // Followup can have multiple Activities
-Followup.hasMany(Activity, { foreignKey: 'Followup_idFollowup' });
-Activity.belongsTo(Followup, { foreignKey: 'Followup_idFollowup' });
+Followup.hasMany(Activity, { foreignKey: '_idFollowup' });
+Activity.belongsTo(Followup, { foreignKey: '_idFollowup' });
 
 // Followup can have multiple Meetings
-Followup.hasMany(Meeting, { foreignKey: 'Followup_idFollowup' });
-Meeting.belongsTo(Followup, { foreignKey: 'Followup_idFollowup' });
+Followup.hasMany(Meeting, { foreignKey: '_idFollowup' });
+Meeting.belongsTo(Followup, { foreignKey: '_idFollowup' });
 
 // ===============
 // Business Relationships
 // ===============
 
 // Business is created from Lead
-Business.belongsTo(Lead, { foreignKey: 'Lead_idLead' });
-Lead.hasOne(Business, { foreignKey: 'Lead_idLead' });
+Business.belongsTo(Lead, { foreignKey: '_idLead' });
+Lead.hasOne(Business, { foreignKey: '_idLead' });
 
 // Business belongs to User (creator/owner)
 Business.belongsTo(User, { foreignKey: 'created_by_user_id' });
 User.hasMany(Business, { foreignKey: 'created_by_user_id' });
 
 // Business has many Activities
-Business.hasMany(Activity, { foreignKey: 'Business_idBusiness' });
-Activity.belongsTo(Business, { foreignKey: 'Business_idBusiness' });
+Business.hasMany(Activity, { foreignKey: '_idBusiness' });
+Activity.belongsTo(Business, { foreignKey: '_idBusiness' });
 
 // Business has many Meetings
-Business.hasMany(Meeting, { foreignKey: 'Business_idBusiness' });
-Meeting.belongsTo(Business, { foreignKey: 'Business_idBusiness' });
+Business.hasMany(Meeting, { foreignKey: '_idBusiness' });
+Meeting.belongsTo(Business, { foreignKey: '_idBusiness' });
 
 // ===============
 // Meeting Relationships
@@ -150,6 +150,15 @@ Contact.belongsToMany(Meeting, {
   foreignKey: 'contact_idContact',
   otherKey: 'meeting_idMeeting'
 });
+
+ContactHasMeeting.belongsTo(Meeting, {
+  foreignKey: 'meeting_idMeeting'
+});
+
+ContactHasMeeting.belongsTo(Contact, {
+  foreignKey: 'contact_idContact'
+});
+
 
 //User can have many meetings
 Meeting.belongsTo(User,{foreignKey: '_idUser'});
@@ -181,16 +190,16 @@ Competitor.belongsToMany(Business, {
 // Product Relationships (if applicable)
 // ===============
 // Product belongs to ProductCategory
-Product.belongsTo(ProductCategory, { foreignKey: 'ProductCategory_idProductCategory' });
-ProductCategory.hasMany(Product, { foreignKey: 'ProductCategory_idProductCategory' });
+Product.belongsTo(ProductCategory, { foreignKey: '_idProductCategory' });
+ProductCategory.hasMany(Product, { foreignKey: '_idProductCategory' });
 
 // Product belongs to User
-ProductCategory.belongsTo(User, { foreignKey: 'User_idUser' });
-User.hasMany(ProductCategory, { foreignKey: 'User_idUser' });
+ProductCategory.belongsTo(User, { foreignKey: '_idUser' });
+User.hasMany(ProductCategory, { foreignKey: '_idUser' });
 
 // Product belongs to User
-Product.belongsTo(User, { foreignKey: 'User_idUser' });
-User.hasMany(Product, { foreignKey: 'User_idUser' });
+Product.belongsTo(User, { foreignKey: '_idUser' });
+User.hasMany(Product, { foreignKey: '_idUser' });
 
 // Subscription and Orders
 User.belongsTo(Plan, { foreignKey: 'plan_id' });
@@ -225,6 +234,7 @@ ContactHasMeeting,
 Product,
 ProductCategory,
 Country,
+Region,
 Gateway,
 Plan,
 Order,

@@ -100,6 +100,10 @@ exports.createEnterprise = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of enterprises
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Enterprise'
  */
 exports.getAllEnterprises = async (req, res, next) => {
   try {
@@ -136,6 +140,17 @@ exports.getAllEnterprises = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Enterprise details
+  *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Enterprise'
  */
 exports.getEnterpriseById = async (req, res, next) => {
   try {
@@ -223,8 +238,8 @@ exports.getEnterpriseById = async (req, res, next) => {
  *                 message:
  *                   type: string
  *                   example: Enterprise updated successfully
- *                 data:
- *                   $ref: '#/components/schemas/Enterprise'
+ *                 data: 
+ *                   type: object
  */
 exports.updateEnterprise = async (req, res, next) => {
   try {

@@ -27,11 +27,15 @@ const { Op } = require('sequelize');
  *               position: { type: string }
  *               language: { type: object }
  *               notes: { type: string }
- *               Lead_idLead: { type: integer }
- *               Country_idCountry: { type: integer }
+ *               _idLead: { type: integer }
+ *               _idCountry: { type: integer }
  *     responses:
  *       201:
  *         description: Contact created
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Contact'
  */
 exports.createContact = async (req, res, next) => {
   try {
@@ -65,6 +69,17 @@ exports.createContact = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of contacts
+  *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Contact'
  */
 exports.getAllContacts = async (req, res, next) => {
   try {
@@ -134,8 +149,8 @@ exports.getAllContacts = async (req, res, next) => {
  *                   type: integer
  *                 rows:
  *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Contact'
+ *                   items: 
+ *                     type: object
  *       500:
  *         description: Error fetching contacts
  */
@@ -147,7 +162,7 @@ exports.getContactsByLead = async (req, res, next) => {
     const contacts = await Contact.findAndCountAll({
       where: {
         is_archived: false,
-        Lead_idLead: leadId
+        _idLead: leadId
       },
       limit,
       offset,
@@ -291,6 +306,17 @@ exports.archiveContact = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Paginated list of contacts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Contact'
  */
 exports.getContactsByMeetingId = async (req, res, next) => {
   try {

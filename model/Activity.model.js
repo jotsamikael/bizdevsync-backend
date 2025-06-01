@@ -8,16 +8,15 @@ const db = require('../config/db')
   status: { type: DataTypes.STRING, ////COMPLETED, PENDING, IN_PROGRESS, NOT_STARTED, WAITING_FEEDBACK
     defaultValue: "IN_PROGRESS"
    },
-
-  created_date: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
   start_date:{
         type: DataTypes.DATE,
         allowNull: false,
     },
-    end_date:{
+  due_date:{
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+  end_date:{
         type: DataTypes.DATE,
         allowNull: true,
     },
@@ -36,11 +35,11 @@ const db = require('../config/db')
     type: DataTypes.DATE,
     allowNull: true
   },
-  Followup_idFollowup: {
+  _idFollowup: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  Business_idBusiness: {
+  _idBusiness: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
@@ -51,7 +50,7 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Activity',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Activity

@@ -18,7 +18,7 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'regions',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Region

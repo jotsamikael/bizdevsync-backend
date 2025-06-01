@@ -8,7 +8,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 
 // Restrict to solo_biz_dev and enterprise_admin
-const canCreateSource = [ 'enterprise_admin', 'solo_biz_dev' ];
+const canCreateSource = [ 'enterprise_admin', 'solo_business_developer' ];
 
 //create source
 router.post('/create',authMiddleware,requireRole(canCreateSource), validate(CreateSourceSchema), CONTROLLER.createSource)

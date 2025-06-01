@@ -2,6 +2,38 @@ const {Gateway} = require('../model');
 const createError = require('../middleware/error'); // Assuming you have a custom error creator
 
 // Create a new payment gateway (Admin only)
+/**
+ * @swagger
+ * /gateway/create:
+ *   post:
+ *     summary: Create a new payment gateway (staff biz dev by default)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+*           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   currency:
+ *                     type: string
+ *                   status:
+ *                     type: integer
+ *                     description: 1 = active, 0 = inactive 
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Gateway'
+ */
 exports.createGateway = async (req, res, next) => {
     try {
       const gateway = await Gateway.create(req.body);

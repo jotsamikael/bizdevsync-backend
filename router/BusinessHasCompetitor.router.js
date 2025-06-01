@@ -4,9 +4,8 @@ const controller = require('../controller/CompetitorHasBusiness.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 const CreateCompetitorHasBusinessSchema = require('../validator/competitorHasBusiness.validator')
-const allowedRoles = ['enterprise_admin', 'solo_biz_dev', 'biz_dev'];
+const allowedRoles = ['enterprise_admin', 'solo_business_developer', 'business_developer'];
 const validate = require('../middleware/validator.middleware');
-
 
 
 router.post('/link-business/:id', authMiddleware, requireRole(allowedRoles), validate(CreateCompetitorHasBusinessSchema), controller.linkCompetitorToBusiness);

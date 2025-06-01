@@ -28,6 +28,6 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Followup',
-  timestamps: false,
+  timestamps: true,
 });
 module.exports = Followup

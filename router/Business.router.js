@@ -6,7 +6,7 @@ const validate = require('../middleware/validator.middleware');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 
-const allowedRoles = ['enterprise_admin', 'solo_biz_dev','biz_dev'];
+const allowedRoles = ['enterprise_admin', 'solo_business_developer','business_developer'];
 
 router.post('/create', authMiddleware, requireRole(allowedRoles), validate(CreateBusinessSchema), controller.createBusiness);
 router.get('/get-all', authMiddleware, requireRole(allowedRoles), controller.getAllBusinesses);
@@ -16,6 +16,6 @@ router.delete('/delete/:id', authMiddleware, requireRole(allowedRoles), controll
 
 router.get('/next-action/:businessId', authMiddleware, requireRole(allowedRoles), controller.getNextActionForBusiness);
 router.get('/overdue-actions/:businessId', authMiddleware, requireRole(allowedRoles), controller.getOverdueActionsForBusiness);
-
+router.get('/get-by-lead-id/:idLead',authMiddleware, requireRole(allowedRoles), controller.getBusinessByLeadId);
 
 module.exports = router;

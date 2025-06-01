@@ -4,13 +4,16 @@ const controller = require('../controller/contactHasMeeting.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 
-const allowedRoles = ['biz_dev', 'solo_biz_dev'];
+const allowedRoles = ['business_developer', 'solo_business_developer'];
 
 //link contact to meeting
-router.post('/contacts/:id/link-meeting', authMiddleware, requireRole(allowedRoles), controller.linkContactToMeeting);
+router.post('/link-meeting/:id', authMiddleware, requireRole(allowedRoles), controller.linkContactToMeeting);
 //Remove or unlink contact to meeting
-router.delete('/contacts/:id/unlink-meeting/:meetingId', authMiddleware, requireRole(allowedRoles), controller.unlinkContactFromMeeting);
-//update contact meeting relation
-router.get('/contacts/:id/meetings', authMiddleware, requireRole(allowedRoles), controller.getContactMeetings);
+router.delete('/unlink-meeting/:meetingId/:id', authMiddleware, requireRole(allowedRoles), controller.unlinkContactFromMeeting);
+
+router.get('/meetings/:id', authMiddleware, requireRole(allowedRoles), controller.getMeetingsOfContact);
+
+router.get('/contacts/:id', authMiddleware, requireRole(allowedRoles), controller.getContactsLinkedToMeeting);
+
 
 module.exports = router;

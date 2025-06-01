@@ -18,7 +18,7 @@ const Enterprise = db.define('Enterprise', {
   is_archived: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
 }, {
   tableName: 'Enterprise',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Enterprise

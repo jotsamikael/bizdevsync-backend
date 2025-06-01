@@ -26,7 +26,7 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Product',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Product

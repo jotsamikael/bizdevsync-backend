@@ -1,4 +1,5 @@
 const createError = require('./error');
+const logger = require('../controller/utils/logger.utils')
 
 /**
  * Middleware to restrict access based on user role
@@ -10,12 +11,12 @@ const requireRole = (roles) => {
   return (req, res, next) => {
     const user = req.user;
     if (!user || !user.role) {
+      logger.info(`User ${user.email} or role ${user.role} not found`)
       return next(createError(401, 'Unauthorized: No user or role found'));
     }
 
     if (!allowedRoles.includes(user.role)) {
-     console.log('user role is: '+user.role)
-      //console.log(allowedRoles)
+      logger.info(`User ${user.email} tried to access unauthorized resource`)
       return next(createError(403, 'Forbidden: You do not have access to this resource'));
     }
 

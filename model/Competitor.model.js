@@ -18,6 +18,6 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Competitor',
-  timestamps: false,
+  timestamps: true,
 });
 module.exports = Competitor

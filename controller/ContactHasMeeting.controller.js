@@ -3,7 +3,7 @@ const createError = require('../middleware/error');
 
 /**
  * @swagger
- * /contacts/{id}/link-meeting:
+ * /contact-has-meeting/link-meeting/{id}:
  *   post:
  *     summary: Link a contact to a meeting
  *     tags: [ContactHasMeeting]
@@ -47,7 +47,7 @@ exports.linkContactToMeeting = async (req, res, next) => {
 
 /**
  * @swagger
- * /contacts/{id}/unlink-meeting/{meetingId}:
+ * /contact-has-meeting/unlink-meeting/{meetingId}/{id}:
  *   delete:
  *     summary: Unlink a contact from a meeting
  *     tags: [ContactHasMeeting]
@@ -89,7 +89,7 @@ exports.unlinkContactFromMeeting = async (req, res, next) => {
 
 /**
  * @swagger
- * /contacts/{id}/meetings:
+ * /contact-has-meeting/meetings/{id}:
  *   get:
  *     summary: Get all meetings linked to a contact
  *     tags: [ContactHasMeeting]
@@ -106,7 +106,7 @@ exports.unlinkContactFromMeeting = async (req, res, next) => {
  *       200:
  *         description: List of linked meetings
  */
-exports.getContactMeetings = async (req, res, next) => {
+exports.getMeetingsOfContact = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -121,5 +121,44 @@ exports.getContactMeetings = async (req, res, next) => {
     res.status(200).json(links);
   } catch (error) {
     next(createError(500, 'Error fetching contact meetings', error.message));
+  }
+};
+
+
+
+/**
+ * @swagger
+ * /contact-has-meeting/contacts/{id}:
+ *   get:
+ *     summary: Get all contacts linked to a contact
+ *     tags: [ContactHasMeeting]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Contact ID
+ *     responses:
+ *       200:
+ *         description: List of linked contacts
+ */
+exports.getContactsLinkedToMeeting = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const links = await ContactHasMeeting.findAll({
+      where: {
+        meeting_idMeeting: id,
+        is_archived: false
+      },
+      include: [Contact]
+    });
+
+    res.status(200).json(links);
+  } catch (error) {
+    next(createError(500, 'Error fetching meetings contact', error.message));
   }
 };

@@ -7,13 +7,30 @@ const db = require('../config/db')
     primaryKey: true,
     autoIncrement: true
   },
-  name: {
+  short_name: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  code: {
+  long_name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  iso2: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  iso3: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+   calling_code: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+   is_un_member: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   },
   is_archived: {
     type: DataTypes.BOOLEAN,
@@ -22,7 +39,7 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Country',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Country

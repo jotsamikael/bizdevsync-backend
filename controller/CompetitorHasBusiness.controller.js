@@ -31,10 +31,10 @@ const createError = require('../middleware/error');
  *               risk_level:
  *                 type: string
  *                 example: "High"
- *               Competitor_idCompetitor:
+ *               _idCompetitor:
  *                 type: integer
  *                 example: 3
- *               Business_idBusiness:
+ *               _idBusiness:
  *                 type: integer
  *                 example: 12
  *     responses:

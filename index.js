@@ -5,10 +5,16 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const pinoHttp = require("pino-http");
 const logger = require("./controller/utils/logger.utils");
+const cors = require('cors');
 
 
 
 const app = express();
+// Enable CORS for all routes
+app.use(cors({
+  origin: 'http://localhost:4200', // your Angular app origin
+  credentials: true                // allow sending cookies
+}));
 
 //import routes
 const userRouter = require('./router/User.router')
@@ -29,7 +35,7 @@ const BusinessHasCompetitorRouter =  require('./router/BusinessHasCompetitor.rou
 const ContactHasMeetingRouter =  require('./router/ContactHasMeeting.router');
 const SourceRouter =  require('./router/Source.router');
 const BusinessRouter = require('./router/Business.router');
-
+const CountryRouter = require('./router/Country.router')
 //port
 const PORT = ENV.PORT || 8889;
 
@@ -69,6 +75,8 @@ app.use('/api/businesses', BusinessRouter);
 app.use('/api/contact-has-meeting', ContactHasMeetingRouter);
 
 app.use('/api/sources', SourceRouter);
+app.use('/api/countries', CountryRouter);
+
 
 
 

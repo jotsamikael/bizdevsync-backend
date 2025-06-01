@@ -47,6 +47,16 @@ const Lead = db.define('Lead',{
         allowNull: false,
         defaultValue:false
     },
+    telephone:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    last_activity: { type: DataTypes.DATE },
+    date_assigned:{ type: DataTypes.DATE },
+    last_status_change:{ type: DataTypes.DATE },
+    date_converted:{ type: DataTypes.DATE },
+    lead_value:{
+        type: DataTypes.FLOAT },
 
     is_archived: {
         type: DataTypes.BOOLEAN,
@@ -56,7 +66,7 @@ const Lead = db.define('Lead',{
 },
 
 {
-    timeTemps:true, //add the created date and updated date
+    timestamps:true, //add the created date and updated date
     underscored: true //enables snake case
 })
 

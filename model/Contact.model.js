@@ -48,7 +48,7 @@ const Contact = db.define('Contact',{
    
 
 },{
-    timeTemps:true, //add the created date and updated date
+    timestamps:true, //add the created date and updated date
     underscored: true //enables snake case
 })
 

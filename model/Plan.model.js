@@ -22,7 +22,7 @@ const Plan = db.define('Plan', {
   }
 }, {
   tableName: 'plans',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Plan;

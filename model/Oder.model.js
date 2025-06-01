@@ -21,7 +21,7 @@ const Order = db.define('Order', {
   }
 }, {
   tableName: 'orders',
-  timestamps: false 
+  timestamps: true 
 });
 
 module.exports = Order;

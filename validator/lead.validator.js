@@ -6,7 +6,8 @@ const CreateLeadSchema = Joi.object({
     status: Joi.string().required(),
     description: Joi.string().required(),
     website: Joi.string().optional(),
-    email: Joi.string().optional(),
+    email: Joi.string().email().optional(),
+    telephone:Joi.string().optional(),
     address: Joi.string().optional(),
     town: Joi.string().optional(),
     tags: Joi.string().optional(),
@@ -14,6 +15,8 @@ const CreateLeadSchema = Joi.object({
     activitySector: Joi.string().required(),
     is_private: Joi.boolean().optional(),
     source: Joi.number().required(),
+    lead_value: Joi.number().required(),
+
 });
 
 const UpdateLeadSchema = Joi.object({
@@ -23,13 +26,15 @@ const UpdateLeadSchema = Joi.object({
     description: Joi.string().optional(),
     website: Joi.string().optional(),
     email: Joi.string().optional(),
+    telephone:Joi.string().optional(),
     address: Joi.string().optional(),
     town: Joi.string().optional(),
     tags: Joi.string().optional(),
     country: Joi.number().optional(),
     activitySector: Joi.string().optional(),
     is_private: Joi.boolean().optional(),
-    source: Joi.number().optional()
+    source: Joi.number().optional(),
+    lead_value: Joi.number().required(),
 
 });
 

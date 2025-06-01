@@ -39,6 +39,7 @@ const logger = require("./utils/logger.utils");
  *                 type: string
  *               password:
  *                 type: string
+ *                 format: password
  *               avatar:
  *                 type: string
  *                 format: binary
@@ -48,6 +49,10 @@ const logger = require("./utils/logger.utils");
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/User'
  */
 exports.signup = async (req, res, next) => {
   logger.info("Signup initiated");
@@ -72,6 +77,8 @@ exports.signup = async (req, res, next) => {
       is_activated: false,
       is_verified: false,
       role: req.body.role,
+      //last_ip : TODO find how to get ip of request
+
     });
 
     //create activation code
@@ -190,6 +197,10 @@ exports.activateAccount = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: User authenticated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *                     $ref: '#/components/schemas/User'
  */
 exports.signin = async (req, res, next) => {
       logger.info(`Login start for user with email ${req.body.email}`);
@@ -227,7 +238,10 @@ exports.signin = async (req, res, next) => {
 
     //send user dto excluding password
     const { password, ...userData } = user.dataValues;
-    //console.log({ password, ...userData });
+    //update last login ip and date
+    const lastlogin = new Date().toISOString()
+    await user.update({ last_login: lastlogin });
+
 
     //create a cookie, token will be send through cookie
     res
@@ -545,7 +559,45 @@ exports.staffUpdateUser = async (req, res, next) => {
 
 
 
-
+/**
+ * @swagger
+ * /user/update-profile/{id}:
+ *   put:
+ *     summary: Staff update a user's information
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the user to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               status:
+ *                 type: boolean
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Failed to update user
+ */
 exports.updateProfile = async (req, res, next) => {
   try {
     const userEmail = req.user.email; // now using email from token/session
@@ -561,8 +613,13 @@ exports.updateProfile = async (req, res, next) => {
       first_name: req.body.first_name ?? user.first_name,
       last_name: req.body.last_name ?? user.last_name,
       email: req.body.email ?? user.email,
-      status: req.body.status ?? user.status,
+      is_activated: req.body.is_activated ?? user.is_activated,
       avatar: user.avatar, // will be conditionally updated below
+      telephone: req.body.telephone ?? user.telephone,
+      linkedIn: req.body.linkedIn ?? user.linkedIn,
+      email_signature: req.body.email_signature ?? user.email_signature,
+      default_language: req.body.default_language ?? user.default_language,
+      last_activity: new Date().toISOString()
     };
 
     // Handle avatar upload if exists

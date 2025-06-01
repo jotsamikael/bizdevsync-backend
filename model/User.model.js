@@ -49,6 +49,31 @@ const User = db.define('User',{
         type: DataTypes.DATE,
         allowNull: true
     },
+
+    telephone:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    last_activity: { type: DataTypes.DATE },
+    last_login:{ type: DataTypes.DATE },
+    google_auth_secret:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+     email_signature:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+     default_language:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    linkedIn:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+
+
     is_archived: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -56,7 +81,7 @@ const User = db.define('User',{
       }
 
 },{
-    timeTemps:true, //add the created date and updated date
+    timestamps:true, //add the created date and updated date
     underscored: true //enables snake case
 })
 

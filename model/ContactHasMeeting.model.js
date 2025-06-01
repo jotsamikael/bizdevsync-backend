@@ -12,6 +12,6 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'contact_has_meeting',
-  timestamps: false,
+  timestamps: true,
 });
-module.exports =ContactHasMeeting
+module.exports = ContactHasMeeting

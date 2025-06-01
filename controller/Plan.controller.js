@@ -48,9 +48,11 @@ const createError = require('../middleware/error'); // Assuming you have a custo
  *                 description: JSON string containing feature limits and access (e.g. '{"leads_limit":"200"}')
  *     responses:
  *       201:
- *         description: Plan created successfully
- *       500:
- *         description: Failed to create plan
+ *         description: Product archived successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Plan'
  */
 exports.createPlan = async (req, res, next) => {
   try {

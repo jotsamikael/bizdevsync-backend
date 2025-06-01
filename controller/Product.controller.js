@@ -26,7 +26,7 @@ const { paginate } = require("./utils/paginate");
  *                 type: number
  *               description:
  *                 type: string
- *               ProductCategory_idProductCategory:
+ *               _idProductCategory:
  *                 type: integer
  *     responses:
  *       201:
@@ -41,7 +41,7 @@ exports.createProduct = async (req, res, next) => {
       price: req.body.price,
       description: req.body.description,
       ProductCategory_idProductCategory: req.body.ProductCategory_idProductCategory,
-      User_idUser: userId
+      _idUser: userId
     });
 
     res.status(201).json({ message: 'Product created successfully', data: product });
@@ -79,7 +79,7 @@ exports.getAllProducts = async (req, res, next) => {
     const { limit, offset } = require("./utils/paginate").paginate(req);
     const products = await Product.findAndCountAll({
       where: {  
-        User_idUser: req.user.id
+        _idUser: req.user.id
         ,is_archived: false },
       limit,
       offset,
@@ -120,7 +120,7 @@ exports.getAllProducts = async (req, res, next) => {
  *                 type: number
  *               description:
  *                 type: string
- *               ProductCategory_idProductCategory:
+ *               _idProductCategory:
  *                 type: integer
  *     responses:
  *       200:
@@ -157,6 +157,10 @@ exports.updateProduct = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Product archived successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Product'
  */
 exports.archiveProduct = async (req, res, next) => {
   try {
@@ -194,6 +198,17 @@ exports.archiveProduct = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Paginated list of products
+  *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
  */
 exports.getProductsByCategoryId = async (req, res, next) => {
   try {

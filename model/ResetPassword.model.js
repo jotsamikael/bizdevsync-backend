@@ -15,7 +15,7 @@ is_archived: {
 }
 }, {
   tableName: 'password_resets',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = PasswordResets;

@@ -25,6 +25,10 @@ const paginate = require("./utils/paginate");
  *     responses:
  *       201:
  *         description: Source created successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Source'
  */
 exports.createSource = async (req, res, next) => {
   const userId = req.user.id;

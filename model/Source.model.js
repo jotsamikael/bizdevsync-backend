@@ -23,7 +23,7 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'sources',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Source

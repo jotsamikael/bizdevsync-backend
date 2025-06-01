@@ -32,6 +32,6 @@ const db = require('../config/db')
   }
 }, {
   tableName: 'Business',
-  timestamps: false,
+  timestamps: true,
 });
 module.exports = Business

@@ -7,7 +7,6 @@ const Meeting = db.define('Meeting', {
    status: { type: DataTypes.STRING, //COMPLETED, PENDING, IN_PROGRESS, NOT STARTED, WAITING FEEDBACK
     defaultValue: "PENDING"
    },
-  created_date: { type: DataTypes.DATE },
   due_date:{ type: DataTypes.DATE },
   summary: { type: DataTypes.STRING },
   next_action: { type: DataTypes.STRING },
@@ -15,11 +14,11 @@ const Meeting = db.define('Meeting', {
     type: DataTypes.DATE,
     allowNull: true
   },
-  Followup_idFollowup: {
+  _idFollowup: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  Business_idBusiness: {
+  _idBusiness: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
@@ -30,7 +29,7 @@ const Meeting = db.define('Meeting', {
   }
 }, {
   tableName: 'Meeting',
-  timestamps: false,
+  timestamps: true,
 });
 
 module.exports = Meeting

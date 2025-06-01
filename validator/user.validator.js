@@ -20,7 +20,7 @@ const loginSchema = Joi.object({
   first_name: Joi.string().optional(),
   last_name: Joi.string().optional(),
   email: Joi.string().email().optional(),  // ✅ optional and must be a valid email ONLY if provided
-  status: Joi.boolean().optional(),
+  is_activated: Joi.boolean().optional(),
 });
 
 
@@ -28,7 +28,10 @@ const loginSchema = Joi.object({
   first_name: Joi.string().optional(),
   last_name: Joi.string().optional(),
   email: Joi.string().email().optional(),  // ✅ optional and must be a valid email ONLY if provided
-  status: Joi.boolean().optional(),
+  telephone: Joi.string().optional(),
+  linkedIn: Joi.string().optional(),
+  email_signature: Joi.string().optional(),
+
 });
 
 

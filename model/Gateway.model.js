@@ -21,7 +21,7 @@ const Gateway = db.define('Gateway', {
   updated_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 }, {
   tableName: 'gateways',
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = Gateway;

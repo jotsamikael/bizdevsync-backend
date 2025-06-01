@@ -43,13 +43,17 @@ const scoring = require('./utils/scoring.utils')
  *                 type: string
  *               next_action_date:
  *                 type: string
- *               Followup_idFollowup:
+ *               _idFollowup:
  *                 type: number
- *               Business_idBusiness:
+ *               _idBusiness:
  *                 type: number
  *     responses:
  *       201:
  *         description: Activity created
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Activity'
  */
 exports.createActivity = async (req, res, next) => {
   try {
@@ -102,6 +106,17 @@ exports.createActivity = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of activities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Activity'
  */
 exports.getAllActivities = async (req, res, next) => {
   try {
@@ -276,7 +291,7 @@ exports.getActivitiesByBusinessId = async (req, res, next) => {
  *                 type: string
  *               next_action_date:
  *                 type: string
- *               Followup_idFollowup:
+ *               _idFollowup:
  *                 type: number
  *     responses:
  *       200:

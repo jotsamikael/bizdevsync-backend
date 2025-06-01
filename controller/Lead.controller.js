@@ -1,5 +1,5 @@
 const {User} = require('../model')
-const {Lead} = require('../model')
+const {Lead, Country, Source} = require('../model')
 
 const ENV = require('../config')
 const createError = require('../middleware/error')
@@ -29,7 +29,7 @@ const paginate = require("./utils/paginate");
  *               description:
  *                 type: string
  *               country:
- *                 type: string
+ *                 type: integer
  *               activitySector:
  *                 type: string
  *               assigned_to_user_id:
@@ -39,6 +39,8 @@ const paginate = require("./utils/paginate");
  *               status:
  *                 type: string
  *               email:
+ *                 type: string
+ *               telephone:
  *                 type: string
  *               address:
  *                 type: string
@@ -50,9 +52,15 @@ const paginate = require("./utils/paginate");
  *                 type: string
  *               source:
  *                 type: integer
+ *               lead_value:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Lead created successfully
+ *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/Lead'
  */
 exports.createLead = async (req, res, next) => {
     logger.info("Lead creation initiated");
@@ -68,6 +76,7 @@ exports.createLead = async (req, res, next) => {
             website:req.body.website,
             status:req.body.status,
             email:req.body.email,
+            telephone:req.body.telephone,
             address:req.body.address,
             town:req.body.town,
             tags:req.body.tags,
@@ -75,7 +84,15 @@ exports.createLead = async (req, res, next) => {
             Country_idCountry: req.body.country,
             activitySector: req.body.activitySector,
             is_private: req.body.is_private || false,
-            _idSource: req.body.source
+            _idSource: req.body.source,
+             lead_value: req.body.lead_value,
+             //dates
+            last_activity:new Date().toISOString(),
+            date_assigned:new Date().toISOString(),
+            last_status_change:new Date().toISOString(),
+            date_converted:new Date().toISOString(),
+
+
         });
 
         res.status(201).json({ message: 'Lead created successfully', data: lead });
@@ -105,6 +122,17 @@ exports.createLead = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of leads
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Lead'
  */
 exports.getLeadsByAssignedUser = async (req, res, next) => {
     try {
@@ -115,7 +143,12 @@ exports.getLeadsByAssignedUser = async (req, res, next) => {
                 is_archived: false,
              },
             limit,
-            offset
+            offset,
+            include:[
+                    { model: User, as: 'creator', attributes: ['first_name', 'first_name'] },
+                    { model: Country, attributes: ['short_name', 'short_name'] },
+                    { model: Source, attributes: ['label', 'label'] }
+            ]
         });
         res.status(200).json(leads);
     } catch (error) {
@@ -144,6 +177,17 @@ exports.getLeadsByAssignedUser = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of leads
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Lead'
  */
 exports.getLeadsByCreator = async (req, res, next) => {
     try {
@@ -200,6 +244,8 @@ exports.getLeadsByCreator = async (req, res, next) => {
  *                 type: string
  *               email:
  *                 type: string
+ *               telephone:
+ *                 type: string
  *               address:
  *                 type: string
  *               town:
@@ -210,6 +256,16 @@ exports.getLeadsByCreator = async (req, res, next) => {
  *                 type: string
  *               source:
  *                 type: integer
+ *               lead_value:
+ *                 type: number
+ *               last_activity:
+ *                 type: string
+ *               date_assigned:
+ *                 type: string
+ *               last_status_change:
+ *                 type: string
+ *               date_converted:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Lead updated
@@ -223,14 +279,22 @@ exports.updateLead = async (req, res, next) => {
             website:req.body.website,
             status:req.body.status,
             email:req.body.email,
+            telephone:req.body.telephone,
+
             address:req.body.address,
             town:req.body.town,
             tags:req.body.tags,
             description: req.body.description,
-            Country_idCountry: req.body.country,
+            _idCountry: req.body.country,
             activitySector: req.body.activitySector,
             is_private: req.body.is_private,
-            _idSource: req.body.source
+            _idSource: req.body.source,
+            lead_value: req.body.lead_value,
+             //dates
+            last_activity: req.body.last_activity,
+            date_assigned:req.body.date_assigned,
+            last_status_change:req.body.last_status_change,
+            date_converted:req.body.date_converted,
         };
         const updated = await Lead.update(lead, { where: { id: leadId, is_archived: false } });
         res.status(200).json({ message: 'Lead updated successfully', data: updated });
