@@ -37,7 +37,19 @@ module.exports = {
           type: 'string',
           enum: ['UNQUALIFIED', 'QUALIFIED', 'CONVERTED']
         },
+        id: { type: 'integer' },
         description: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' },
+        creator:{
+          first_name:{ type: 'string' }
+        },
+         Country:{
+          short_name:{ type: 'string' }
+        },
+         Source:{
+          label:{ type: 'string' }
+        },
         website: { type: 'string', nullable: true },
         email: { type: 'string', nullable: true },
         country: { type: 'integer', nullable: true },
@@ -103,6 +115,7 @@ module.exports = {
     Contact: {
       type: 'object',
       properties: {
+        idContact: { type: 'integer' },
         assignedToUser: { type: 'integer' },
         first_name: { type: 'string' },
         last_name: { type: 'string' },
@@ -156,6 +169,7 @@ module.exports = {
     Order: {
       type: 'object',
       properties: {
+        id: { type: 'integer' },
         invoice_no: { type: 'string' },
         payment_id: { type: 'string' },
         plan_id: { type: 'integer' },
@@ -174,6 +188,7 @@ module.exports = {
     Plan: {
       type: 'object',
       properties: {
+        id: { type: 'integer' },
         title: { type: 'string' },
         labelcolor: { type: 'string' },
         iconname: { type: 'string' },
@@ -292,6 +307,8 @@ module.exports = {
     Gateway: {
       type: 'object',
       properties: {
+        id: { type: 'integer' },
+
         name: { type: 'string' },
         currency: { type: 'string' },
         logo: { type: 'string' },
