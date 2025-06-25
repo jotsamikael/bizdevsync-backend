@@ -25,7 +25,7 @@ const { Op } = require('sequelize');
  *               email: { type: string }
  *               phone: { type: string }
  *               position: { type: string }
- *               language: { type: object }
+ *               language: { type: string }
  *               notes: { type: string }
  *               _idLead: { type: integer }
  *               _idCountry: { type: integer }
@@ -47,8 +47,13 @@ exports.createContact = async (req, res, next) => {
     logger.info(`Contact created: ${contact.first_name} ${contact.last_name}`);
   } catch (error) {
     logger.error(`Contact creation error: ${error.message}`);
-    next(createError(500, 'Error creating contact', error.message));
-  }
+  next(
+        createError(
+          500,
+          `Error occurred during contact creation: ${error.errors[0].message}`,
+          error.errors[0].message
+        )
+      );  }
 };
 
 /**
@@ -102,7 +107,9 @@ exports.getAllContacts = async (req, res, next) => {
         {
           model: Country
         }
-      ]
+      ],
+      order: [['createdAt', 'DESC']]
+
     });
 
     res.status(200).json(contacts);

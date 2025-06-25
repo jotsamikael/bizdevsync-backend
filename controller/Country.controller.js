@@ -100,7 +100,7 @@ exports.createCountry = async (req, res, next) => {
  */
 exports.getAllCountries = async (req, res, next) => {
   try {
-    const { limit, offset } = paginate(req);
+    const limit = 200; const offset = 0 
 
     const countries = await Country.findAndCountAll({
       where: { is_archived: false },

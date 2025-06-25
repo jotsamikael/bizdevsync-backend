@@ -40,7 +40,7 @@ exports.createProduct = async (req, res, next) => {
       label: req.body.label,
       price: req.body.price,
       description: req.body.description,
-      ProductCategory_idProductCategory: req.body.ProductCategory_idProductCategory,
+      _idProductCategory: req.body.product_category_id,
       _idUser: userId
     });
 
@@ -72,7 +72,18 @@ exports.createProduct = async (req, res, next) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: List of products
+ *         description: List of Products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
  */
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -83,7 +94,9 @@ exports.getAllProducts = async (req, res, next) => {
         ,is_archived: false },
       limit,
       offset,
-      include: [ProductCategory] //include iis used for eager loading and will attach the product catgeory to response
+      include: [ProductCategory], //include iis used for eager loading and will attach the product catgeory to response
+      order: [['createdAt', 'DESC']]
+
     });
     res.status(200).json(products);
   } catch (error) {
@@ -100,7 +113,7 @@ exports.getAllProducts = async (req, res, next) => {
  *     summary: Update a product
  *     tags: [Products]
  *     security:
- *       - bearerAuth: []
+ *       - bearerAuth: [] 
  *     parameters:
  *       - in: path
  *         name: id

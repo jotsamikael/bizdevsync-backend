@@ -47,3 +47,51 @@ exports.createSource = async (req, res, next) => {
     next(createError(500, "Could not create source", error.message));
   }
 };
+
+
+
+
+/**
+ * @swagger
+ * /sources/get-all:
+ *   get:
+ *     summary: Get all sources (paginated)
+ *     tags: [Sources]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: List of sources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Source'
+ */
+exports.getAllSource = async (req, res, next) => {
+  try {
+    const source = await Source.findAndCountAll({
+      where: { is_archived: false },
+      order: [['createdAt', 'DESC']]
+
+    });
+
+    res.status(200).json(source);
+  } catch (error) {
+    logger.error(`Fetch source error: ${error.message}`);
+    next(createError(500, 'Could not fetch source', error.message));
+  }
+};

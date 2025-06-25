@@ -3,6 +3,7 @@ const db = require('../config/db')
 
 const Meeting = db.define('Meeting', {
   idMeeting: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  title: { type: DataTypes.STRING, allowNull:false },
   date: { type: DataTypes.STRING },
    status: { type: DataTypes.STRING, //COMPLETED, PENDING, IN_PROGRESS, NOT STARTED, WAITING FEEDBACK
     defaultValue: "PENDING"

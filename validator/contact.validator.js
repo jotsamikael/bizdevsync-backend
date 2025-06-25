@@ -7,10 +7,10 @@ const CreateContactSchema = Joi.object({
   email: Joi.string().email().allow(null, ''),
   phone: Joi.string().allow(null, ''),
   position: Joi.string().allow(null, ''),
-  language: Joi.object().required(),
+  language: Joi.string().required(),
   notes: Joi.string().allow(null, ''),
-  Lead_idLead: Joi.number().required(),
-  Country_idCountry: Joi.number().required()
+  _idLead: Joi.number().required(),
+  _idCountry: Joi.number().required()
 });
 
 module.exports = { CreateContactSchema };

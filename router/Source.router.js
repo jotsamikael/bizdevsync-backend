@@ -13,5 +13,7 @@ const canCreateSource = [ 'enterprise_admin', 'solo_business_developer' ];
 //create source
 router.post('/create',authMiddleware,requireRole(canCreateSource), validate(CreateSourceSchema), CONTROLLER.createSource)
 
+//get source
+router.get('/get-all',authMiddleware,CONTROLLER.getAllSource)
 
 module.exports = router;

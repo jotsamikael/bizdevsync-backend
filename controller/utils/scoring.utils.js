@@ -13,8 +13,8 @@ exports.computeFollowupScore = async (followupId) => {
   // Activities for Followup
   const activitiesCount = await Activity.count({
     where: {
-      Followup_idFollowup: followupId,
-      created_date: { [Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      _idFollowup: followupId,
+      createdAt: { [Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       is_archived: false
     }
   });
@@ -23,8 +23,8 @@ exports.computeFollowupScore = async (followupId) => {
   // Meetings for Followup
   const meetingsCount = await Meeting.count({
     where: {
-      Followup_idFollowup: followupId,
-      created_date: { [Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      _idFollowup: followupId,
+      createdAt: { [Op.gt]: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       is_archived: false
     }
   });

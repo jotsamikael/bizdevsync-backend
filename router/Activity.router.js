@@ -14,8 +14,8 @@ router.get('/get-by-id/:id', authMiddleware, requireRole(allowedRoles), controll
 router.put('/update/:id', authMiddleware, requireRole(allowedRoles), controller.updateActivity);
 router.delete('/delete/:id', authMiddleware, requireRole(allowedRoles), controller.archiveActivity);
 
-router.get('/get-by-followup/:followupId', controller.getActivitiesByFollowupId);
-router.get('/get-by-business/:businessId', controller.getActivitiesByBusinessId);
+router.get('/followups/:followupId', controller.getActivitiesByFollowupId);
+router.get('/businesses/:businessId', controller.getActivitiesByBusinessId);
 
 
 module.exports = router;

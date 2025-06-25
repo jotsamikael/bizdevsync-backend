@@ -24,7 +24,7 @@ const { Op } = require('sequelize');
  *               start_date:
  *                 type: string
  *                 format: date-time
- *               Lead_idLead:
+ *               _idLead:
  *                 type: integer
  *               outcome:
  *                 type: string
@@ -62,6 +62,17 @@ exports.createFollowup = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: List of followups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Followup'
  */
 exports.getAllFollowups = async (req, res, next) => {
   try {
@@ -79,7 +90,9 @@ exports.getAllFollowups = async (req, res, next) => {
           }
         }],
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'DESC']]
+
     });
     res.status(200).json(followups);
   } catch (error) {

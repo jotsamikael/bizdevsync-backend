@@ -85,9 +85,11 @@ exports.getAllProductCategories = async (req, res, next) => {
   try {
     const { limit, offset } = require("./utils/paginate").paginate(req);
     const categories = await ProductCategory.findAndCountAll({
-      where: { is_archived: false,  User_idUser: userId },
+      where: { is_archived: false,  _idUser: userId },
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'DESC']]
+
     });
 
     res.status(200).json(categories);

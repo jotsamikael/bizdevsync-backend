@@ -112,7 +112,9 @@ exports.getAllEnterprises = async (req, res, next) => {
       where: { is_archived: false },
       limit,
       offset,
-      include: [{ model: Country }]
+      include: [{ model: Country }],
+      order: [['createdAt', 'DESC']]
+
 
     });
 

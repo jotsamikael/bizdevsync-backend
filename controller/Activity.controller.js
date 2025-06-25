@@ -63,15 +63,16 @@ exports.createActivity = async (req, res, next) => {
             detail:req.body.detail,
             created_date: new Date().toISOString(),
             start_date:req.body.start_date,
-            end_date:req.body.end_date,
+            status:'STARTED',
+            due_date:req.body.due_date,
             priority:req.body.priority,
             tags:req.body.tags,
             last_action: req.body.last_action,
             last_action_date: req.body.last_action_date,
             next_action: req.body.next_action,
             next_action_date: req.body.next_action_date,
-            Followup_idFollowup: req.body.Followup_idFollowup,
-            Business_idBusiness: req.body.Business_idBusiness,
+            _idFollowup: req.body._idFollowup,
+            _idBusiness: req.body._idBusiness,
 
             _idUser: userId
         });
@@ -84,7 +85,8 @@ exports.createActivity = async (req, res, next) => {
 
     res.status(201).json({ message: 'Activity created', data: activity });
   } catch (error) {
-    next(createError(500, 'Create activity error', error.message));
+    console.log(error)
+    next(createError(500, 'Create activity error: '+error.message, error.message));
   }
 };
 
@@ -127,7 +129,9 @@ exports.getAllActivities = async (req, res, next) => {
       where: { is_archived: false, _idUser:userId },
       include: [Followup],
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'DESC']]
+
     });
     res.status(200).json(activities);
   } catch (error) {
@@ -188,7 +192,18 @@ exports.getActivityById = async (req, res, next) => {
  *         schema: { type: integer }
  *     responses:
  *       200:
- *         description: Paginated list of activities
+ *         description: List of Activities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Activity'
  */
 exports.getActivitiesByFollowupId = async (req, res, next) => {
   try {
@@ -196,7 +211,7 @@ exports.getActivitiesByFollowupId = async (req, res, next) => {
     const { limit, offset } = require('./utils/paginate').paginate(req);
 
     const activities = await Activity.findAndCountAll({
-      where: { Followup_idFollowup: followupId, is_archived: false },
+      where: { _idFollowup: followupId, is_archived: false },
       limit,
       offset
     });
@@ -228,7 +243,18 @@ exports.getActivitiesByFollowupId = async (req, res, next) => {
  *         schema: { type: integer }
  *     responses:
  *       200:
- *         description: Paginated list of activities
+ *         description: List of Activities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Activity'
  */
 exports.getActivitiesByBusinessId = async (req, res, next) => {
   try {
@@ -236,7 +262,7 @@ exports.getActivitiesByBusinessId = async (req, res, next) => {
     const { limit, offset } = require('./utils/paginate').paginate(req);
 
     const activities = await Activity.findAndCountAll({
-      where: { Business_idBusiness: businessId, is_archived: false },
+      where: { _idBusiness: businessId, is_archived: false },
       limit,
       offset
     });
@@ -304,6 +330,8 @@ exports.updateActivity = async (req, res, next) => {
     });
     res.status(200).json({ message: 'Activity updated' });
   } catch (error) {
+        console.log(error)
+
     next(createError(500, 'Update activity error', error.message));
   }
 };

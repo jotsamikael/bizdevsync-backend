@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controller/Country.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
-const CreateCountrySchema = require('../validator/country.validator')
+const {CreateCountrySchema} = require('../validator/country.validator')
 const allowedRoles = ['enterprise_admin', 'solo_business_developer'];
 const validate = require('../middleware/validator.middleware');
 

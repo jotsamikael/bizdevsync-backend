@@ -33,7 +33,7 @@ const Contact = db.define('Contact',{
         allowNull: true,
     },
     language:{
-        type: DataTypes.JSON, //json object to possibly store multiple languages
+        type: DataTypes.STRING, //json object to possibly store multiple languages
         allowNull: false
     },
     notes:{

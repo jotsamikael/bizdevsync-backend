@@ -111,7 +111,9 @@ exports.getAllCompetitors = async (req, res, next) => {
       where: { is_archived: false },
       include: [Business],
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'DESC']]
+
     });
 
     res.status(200).json(competitors);

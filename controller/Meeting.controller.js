@@ -1,4 +1,4 @@
-const { Meeting, Followup } = require("../model");
+const { Meeting, Followup, Contact, ContactHasMeeting } = require("../model");
 const createError = require("../middleware/error");
 const { paginate } = require("./utils/paginate");
 const scoring = require("./utils/scoring.utils");
@@ -34,37 +34,77 @@ const scoring = require("./utils/scoring.utils");
  *                 type: number
  *               _idBusiness:
  *                 type: number
+ *               contact_emails:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Meeting created
  */
 exports.createMeeting = async (req, res, next) => {
+  const {title, summary, next_action, next_action_date, due_date, _idFollowup, _idBusiness } = req.body;
+  let { contact_emails } = req.body; // Declare contact_emails with let to reassign
+  const userId = req.user.id;
+
   try {
-    const userId = req.user.id;
+    // Parse contact_emails string into an array
+    let parsedContactEmails = [];
+    if (typeof contact_emails === 'string' && contact_emails.length > 0) {
+      parsedContactEmails = contact_emails.split(',').map(email => email.trim());
+    } else if (Array.isArray(contact_emails)) {
+      // If it's already an array (e.g., if the frontend was updated to send an array)
+      parsedContactEmails = contact_emails.map(email => email.trim());
+    }
+
     const meeting = await Meeting.create({
-      date: req.body.assignedToUser || userId,
+      date: req.body.assignedToUser || userId, // Consider if 'date' should be 'assignedToUser' or 'created_date'
       created_date: new Date().toISOString(),
-      summary: req.body.summary,
-      next_action: req.body.next_action,
-      next_action: req.body.next_action,
-      next_action_date: req.body.next_action_date,
-      due_date:req.body.due_date,
-      Followup_idFollowup: req.body.Followup_idFollowup,
-      Business_idBusiness: req.body.Business_idBusiness,
+      title,
+      summary,
+      next_action,
+      next_action_date,
+      due_date,
+      _idFollowup,
+      _idBusiness,
       _idUser: userId,
     });
 
-    // Recompute Followup score after creating the Activity
-    const followupId = req.body.Followup_idFollowup || req.body.idFollowup;
+        console.log('idmeeting',meeting.idMeeting);
+
+
+    // ✅ Link contacts by email
+    if (parsedContactEmails.length > 0) {
+      const contacts = await Contact.findAll({
+        where: {
+          email: parsedContactEmails, // Use the parsed array here
+        }
+      });
+
+    console.log('emails',contacts);
+
+
+      const linkPromises = contacts.map(contact => 
+        ContactHasMeeting.create({
+          contact_idContact: contact.id,
+          meeting_idMeeting: meeting.idMeeting,
+        })
+      );
+
+      await Promise.all(linkPromises);
+    }
+
+    // Recompute Followup score
+    const followupId = _idFollowup || req.body.Followup_idFollowup || req.body.idFollowup;
     if (followupId) {
       await scoring.computeFollowupScore(followupId);
     }
 
     res.status(201).json({ message: "Meeting created", data: meeting });
   } catch (error) {
+    console.log(error)
     next(createError(500, "Create meeting error", error.message));
   }
 };
+
 
 /**
  * @swagger
@@ -83,7 +123,18 @@ exports.createMeeting = async (req, res, next) => {
  *         schema: { type: integer }
  *     responses:
  *       200:
- *         description: List of meetings
+ *         description: List of Meetings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Meeting'
  */
 exports.getAllMeetings = async (req, res, next) => {
   try {
@@ -204,7 +255,18 @@ exports.updateMeeting = async (req, res, next) => {
  *         schema: { type: integer }
  *     responses:
  *       200:
- *         description: Paginated list of meetings
+ *         description: List of Meetings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Meeting'
  */
 exports.getMeetingsByFollowupId = async (req, res, next) => {
   try {
@@ -212,18 +274,19 @@ exports.getMeetingsByFollowupId = async (req, res, next) => {
     const { limit, offset } = require("./utils/paginate").paginate(req);
 
     const meetings = await Meeting.findAndCountAll({
-      where: { Followup_idFollowup: followupId, is_archived: false },
+      where: { _idFollowup: followupId, is_archived: false },
       limit,
       offset,
     });
 
     res.status(200).json(meetings);
   } catch (error) {
+    console.log(error)
     next(
       createError(500, "Error fetching meetings by followup", error.message)
     );
   }
-};
+}; 
 
 /**
  * @swagger
@@ -265,7 +328,7 @@ exports.getMeetingsByBusinessId = async (req, res, next) => {
     const { limit, offset } = require("./utils/paginate").paginate(req);
 
     const meetings = await Meeting.findAndCountAll({
-      where: { Business_idBusiness: businessId, is_archived: false },
+      where: {_idBusiness: businessId, is_archived: false },
       limit,
       offset,
     });

@@ -150,7 +150,8 @@ exports.getAllBusinesses = async (req, res, next) => {
       where: { created_by_user_id: req.user.id, is_archived: false },
       include: [Lead, Activity, Meeting],
       limit,
-      offset
+      offset,
+      order: [['createdAt', 'DESC']]
     });
     res.status(200).json(businesses);
   } catch (error) {

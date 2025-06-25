@@ -16,7 +16,6 @@ const CreateLeadSchema = Joi.object({
     is_private: Joi.boolean().optional(),
     source: Joi.number().required(),
     lead_value: Joi.number().required(),
-
 });
 
 const UpdateLeadSchema = Joi.object({
@@ -35,6 +34,8 @@ const UpdateLeadSchema = Joi.object({
     is_private: Joi.boolean().optional(),
     source: Joi.number().optional(),
     lead_value: Joi.number().required(),
+    date_converted: Joi.optional()
+
 
 });
 

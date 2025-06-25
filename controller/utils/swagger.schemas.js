@@ -13,7 +13,6 @@ module.exports = {
           is_verified: { type: 'boolean' },
           role: { type: 'string' },
           will_expire: { type: 'string', format: 'date-time' },
-          is_archived: { type: 'boolean' },
           createdAt: { type: 'string', format: 'date-time' },
           updatedAt: { type: 'string', format: 'date-time' },
           Enterprise_idEnterprise: { type: 'integer', nullable: true },
@@ -60,7 +59,6 @@ module.exports = {
         tags: { type: 'string', nullable: true },
         activitySector: { type: 'string' },
         is_private: { type: 'boolean' },
-        is_archived: { type: 'boolean' },
         lead_value: { type: 'integer', nullable: true },
         last_activity:{ type: 'string', nullable: true,format: 'date-time'}, 
         date_assigned:{type: 'string', nullable: true,format: 'date-time'},
@@ -79,6 +77,7 @@ module.exports = {
           enum: ['COMPLETED', 'PENDING', 'IN_PROGRESS', 'NOT_STARTED', 'WAITING_FEEDBACK']
         },
         start_date: { type: 'string', format: 'date-time' },
+        due_date: { type: 'string', format: 'date-time' },
         end_date: { type: 'string', format: 'date-time', nullable: true },
         tags: { type: 'string', nullable: true },
         priority: {
@@ -89,16 +88,15 @@ module.exports = {
         last_action_date: { type: 'string', format: 'date-time', nullable: true },
         next_action: { type: 'string', nullable: true },
         next_action_date: { type: 'string', format: 'date-time', nullable: true },
-        Followup_idFollowup: { type: 'integer', nullable: true },
-        Business_idBusiness: { type: 'integer', nullable: true },
-        is_archived: { type: 'boolean' }
+        _idFollowup: { type: 'integer', nullable: true },
+        _idBusiness: { type: 'integer', nullable: true },
       }
     },
     Meeting: {
       type: 'object',
       properties: {
         idMeeting: { type: 'integer' },
-        date: { type: 'string', format: 'date-time' },
+        title: { type: 'string', nullable: false },
         status: {
           type: 'string',
           enum: ['COMPLETED', 'PENDING', 'IN_PROGRESS', 'NOT STARTED', 'WAITING FEEDBACK']
@@ -107,9 +105,8 @@ module.exports = {
         summary: { type: 'string' },
         next_action: { type: 'string' },
         next_action_date: { type: 'string', format: 'date-time', nullable: true },
-        Followup_idFollowup: { type: 'integer', nullable: true },
-        Business_idBusiness: { type: 'integer', nullable: true },
-        is_archived: { type: 'boolean' }
+        _idFollowup: { type: 'integer', nullable: true },
+        _idBusiness: { type: 'integer', nullable: true },
       }
     },
     Contact: {
@@ -123,11 +120,10 @@ module.exports = {
         phone: { type: 'string', nullable: true },
         position: { type: 'string', nullable: true },
         language: {
-          type: 'object',
-          additionalProperties: true // ou définissez des propriétés précises si connues
+          type: 'string',
+          nullable: false 
         },
         notes: { type: 'string', nullable: true },
-        is_archived: { type: 'boolean' }
       }
     },
     Product: {
@@ -146,7 +142,6 @@ module.exports = {
         idProductCategory: { type: 'integer' },
         label: { type: 'string' },
         description: { type: 'string', nullable: true },
-        is_archived: { type: 'boolean' }
       }
     },
     Region: {
@@ -154,7 +149,6 @@ module.exports = {
       properties: {
         idRegion: { type: 'integer' },
         label: { type: 'string' },
-        is_archived: { type: 'boolean' }
       }
     },
     Source: {
@@ -163,7 +157,6 @@ module.exports = {
         idSource: { type: 'integer' },
         label: { type: 'string' },
         description: { type: 'string' },
-        is_archived: { type: 'boolean' }
       }
     },
     Order: {
@@ -182,7 +175,6 @@ module.exports = {
         meta: { type: 'string' },
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' },
-        is_archived: { type: 'boolean' }
       }
     },
     Plan: {
@@ -202,7 +194,6 @@ module.exports = {
         data: { type: 'string' },
         created_at: { type: 'string', format: 'date-time' },
         updated_at: { type: 'string', format: 'date-time' },
-        is_archived: { type: 'boolean' }
       }
     },
     Followup: {
@@ -222,7 +213,6 @@ module.exports = {
           type: 'string',
           enum: ['Hot', 'Warm', 'Cold']
         },
-        is_archived: { type: 'boolean' }
       }
     },
   Country: {
@@ -235,7 +225,6 @@ module.exports = {
     iso3: { type: 'string', nullable: true },
     calling_code: { type: 'string', nullable: true },
     is_un_member: { type: 'boolean' },
-    is_archived: { type: 'boolean' },
     createdAt: { type: 'string', format: 'date-time' },
     updatedAt: { type: 'string', format: 'date-time' }
   }
@@ -260,7 +249,6 @@ module.exports = {
         is_verified: { type: 'boolean' },
         subscription_status: { type: 'string' },
         expires_at: { type: 'string', format: 'date-time', nullable: true },
-        is_archived: { type: 'boolean' }
       }
     },
     Business: {
@@ -286,7 +274,6 @@ module.exports = {
         turnover_signable: { type: 'string', nullable: true },
         notes: { type: 'string', nullable: true },
         closed_date: { type: 'string', format: 'date-time', nullable: true },
-        is_archived: { type: 'boolean' }
       }
     },
     Competitor: {
@@ -301,7 +288,6 @@ module.exports = {
         product_line: { type: 'string', nullable: true },
         website: { type: 'string', nullable: true },
         notes: { type: 'string', nullable: true },
-        is_archived: { type: 'boolean' }
       }
     },
     Gateway: {

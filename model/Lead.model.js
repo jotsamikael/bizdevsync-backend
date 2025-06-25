@@ -7,7 +7,7 @@ const Lead = db.define('Lead',{
     name:{
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: false
     },
     status:{
         type: DataTypes.STRING, //Enum: UNQUALIFIED, QUALIFIED, CONVERTED
