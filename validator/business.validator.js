@@ -4,7 +4,6 @@ const CreateBusinessSchema = Joi.object({
   need: Joi.string().required(),
   approach: Joi.string().required(),
   stage: Joi.string().required(),
-  approach:Joi.string().required(),
   client_constraints:Joi.string().allow('', null),
   business_type: Joi.string().required(),
   case_level: Joi.string().required(),
@@ -16,7 +15,7 @@ const CreateBusinessSchema = Joi.object({
   turnover_signable: Joi.string().allow('', null),
   notes: Joi.string().allow('', null),
   closed_date: Joi.date().allow(null),
-  Lead_idLead: Joi.number().required()
+  _idLead: Joi.number().required()
 });
 
 module.exports = { CreateBusinessSchema };

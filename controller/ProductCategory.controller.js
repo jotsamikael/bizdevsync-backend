@@ -36,7 +36,7 @@ exports.createProductCategory = async (req, res, next) => {
     const category = await ProductCategory.create({
       label: req.body.label,
       description: req.body.description,
-      User_idUser: userId
+      _idUser: userId
     });
 
     res.status(201).json({ message: 'Product category created successfully', data: category });
@@ -133,7 +133,7 @@ exports.updateProductCategory = async (req, res, next) => {
   try {
     const id = req.params.id;
     const updated = await ProductCategory.update(req.body, {
-      where: { idProductCategory: id, is_archived: false, User_idUser: userId }
+      where: { idProductCategory: id, is_archived: false, _idUser: userId }
     });
 
     res.status(200).json({ message: 'Product category updated successfully', data: updated });
@@ -164,6 +164,7 @@ exports.updateProductCategory = async (req, res, next) => {
 exports.archiveProductCategory = async (req, res, next) => {
   try {
     const id = req.params.id;
+    console.log(id)
     await ProductCategory.update({ is_archived: true }, {
       where: { idProductCategory: id }
     });

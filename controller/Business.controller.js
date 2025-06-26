@@ -101,7 +101,7 @@ exports.createBusiness = async (req, res, next) => {
       turnover_signable: req.body.turnover_signable,
       notes: req.body.notes,
       closed_date: req.body.closed_date,
-      Lead_idLead: req.body.Lead_idLead,
+      _idLead: req.body._idLead,
       created_by_user_id: userId,
       created_date: new Date().toISOString()
     });
