@@ -42,7 +42,7 @@ const User = db.define('User',{
         allowNull: false,
         defaultValue:'user',
         validate:{
-            isIn:[['user','solo_biz_dev','enterprise_admin','admin','operator']]
+            isIn:[['user','solo_business_developer','enterprise_admin','admin','operator']]
         }
     },
     will_expire: {

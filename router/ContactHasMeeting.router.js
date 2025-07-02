@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controller/contactHasMeeting.controller');
+const controller = require('../controller/ContactHasMeeting.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/autorisationMiddleware');
 

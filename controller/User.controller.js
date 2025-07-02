@@ -30,22 +30,22 @@ const logger = require("./utils/logger.utils");
  *               - last_name
  *               - email
  *               - password
+ *               - role
  *             properties:
  *               first_name:
  *                 type: string
  *               last_name:
+ *                 type: string
+ *               linkedIn:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
  *                 type: string
  *                 format: password
- *               avatar:
- *                 type: string
- *                 format: binary
  *               role:
  *                 type: string
- *                 enum: [solo_biz_dev, enterprise_admin]
+ *                 enum: [solo_business_developer, enterprise_admin]
  *     responses:
  *       201:
  *         description: User created successfully
@@ -56,6 +56,7 @@ const logger = require("./utils/logger.utils");
  */
 exports.signup = async (req, res, next) => {
   logger.info("Signup initiated");
+
   try {
 
     //encrypt the password
@@ -80,6 +81,7 @@ exports.signup = async (req, res, next) => {
       //last_ip : TODO find how to get ip of request
 
     });
+    console.log(user)
 
     //create activation code
     const activationCode = generateActivationCode();
@@ -96,8 +98,10 @@ exports.signup = async (req, res, next) => {
     logger.info(`New user: ${req.body.email}`);
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    logger.error(`Signup error: ${err.message}`);
-    next(createError(500, "Error occured during signup", error.message));
+    logger.error(`Signup error: ${error}`);
+        console.log('Received role (raw):', error.parent);
+
+    next(createError(500, "Error occured during signup", error.parent));
   }
 };
 
@@ -128,6 +132,7 @@ exports.signup = async (req, res, next) => {
  */
 exports.activateAccount = async (req, res, next) => {
     const { email, code } = req.body;
+    console.log(req.body)
       logger.info(`Activate account initiated for user with email ${email}`);
 
   
@@ -280,14 +285,25 @@ exports.signin = async (req, res, next) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: Paginated list of solo biz devs
+ *         description: List of followups
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 exports.getSoloBizDevs = async (req, res, next) => {
   const { limit, offset } = require("./utils/paginate").paginate(req);
 
   try {
     const users = await User.findAndCountAll({
-      where: { role: "solo_biz_dev" },
+      where: { role: "solo_business_developer" },
       limit,
       offset,
       order: [["createdAt", "DESC"]],
@@ -327,7 +343,18 @@ exports.getSoloBizDevs = async (req, res, next) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: Paginated list of users
+ *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 exports.getUsersByEnterprise = async (req, res, next) => {
   const { limit, offset } = require("./utils/paginate").paginate(req);
@@ -367,15 +394,18 @@ exports.getUsersByEnterprise = async (req, res, next) => {
  *           type: string
  *     responses:
  *       200:
- *         description: User details
+ *         description: Business created successfully
+  *         content:
+ *            application/json:
+ *               schema:
+ *                  $ref: '#/components/schemas/User'
  */
 exports.getUserByEmail = async (req, res, next) => {
+
     const email = req.query.email.trim().toLowerCase()
-    console.log(email)
 
     try {
         const user = await User.findOne({ where: { email: email } });
-        console.log(user.first_name)
 
     if (!user)
       return next(createError(404, `User with email ${email} doesn't exist`));
@@ -406,6 +436,17 @@ exports.getUserByEmail = async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Paginated list of SaaS staff
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count:
+ *                   type: integer
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 exports.getSaasAtaff = async (req, res, next) => {
   const { limit, offset } = require("./utils/paginate").paginate(req);
@@ -585,8 +626,16 @@ exports.staffUpdateUser = async (req, res, next) => {
  *                 type: string
  *               email:
  *                 type: string
- *               status:
- *                 type: boolean
+ *               telephone:
+ *                 type: string
+ *               default_language:
+ *                 type: string
+ *               linkedIn:
+ *                 type: string 
+ *               email_signature:
+ *                 type: string
+ *               google_auth_secret:
+ *                 type: string   
  *               avatar:
  *                 type: string
  *                 format: binary
@@ -599,6 +648,9 @@ exports.staffUpdateUser = async (req, res, next) => {
  *         description: Failed to update user
  */
 exports.updateProfile = async (req, res, next) => {
+    console.log('entered')
+
+  console.log(req.body)
   try {
     const userEmail = req.user.email; // now using email from token/session
     const user = await User.findOne({ where: { email: userEmail } });
@@ -633,6 +685,7 @@ exports.updateProfile = async (req, res, next) => {
     logger.info(`User updated: ${user.email}`);
     res.status(200).json({ message: "User updated successfully", data: user });
   } catch (error) {
+    console.log(error)
     logger.error(`Update user error: ${error.message}`);
     next(createError(500, "Failed to update user", error.message));
   }
