@@ -12,7 +12,7 @@ const cors = require('cors');
 const app = express();
 // Enable CORS for all routes
 app.use(cors({
-  origin: 'http://localhost:4200', // your Angular app origin
+  origin: true, // your Angular app origin
   credentials: true                // allow sending cookies
 }));
 
