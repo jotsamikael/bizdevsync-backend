@@ -82,7 +82,7 @@ const User = db.define('User',{
 
 },{
     timestamps:true, //add the created date and updated date
-  tableName: 'user',
+  tableName: 'users-',
 })
 
 module.exports = User

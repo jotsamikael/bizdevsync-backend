@@ -27,7 +27,7 @@ const Activation = db.define('Activation', {
     allowNull: false
   }
 }, {
-  tableName: 'activation',
+  tableName: 'activations',
   timestamps: false
 });
 
