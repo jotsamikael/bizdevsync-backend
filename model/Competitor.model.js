@@ -17,7 +17,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'Competitor',
+  tableName: 'competitor',
   timestamps: true,
 });
 module.exports = Competitor

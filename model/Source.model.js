@@ -22,7 +22,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'sources',
+  tableName: 'source',
   timestamps: true,
 });
 

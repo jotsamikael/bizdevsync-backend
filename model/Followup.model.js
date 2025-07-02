@@ -27,7 +27,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'Followup',
+  tableName: 'followup',
   timestamps: true,
 });
 module.exports = Followup

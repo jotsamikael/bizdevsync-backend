@@ -38,7 +38,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'Country',
+  tableName: 'country',
   timestamps: true,
 });
 

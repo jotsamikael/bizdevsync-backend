@@ -25,7 +25,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'Product',
+  tableName: 'product',
   timestamps: true,
 });
 

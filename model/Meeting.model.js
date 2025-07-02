@@ -29,7 +29,7 @@ const Meeting = db.define('Meeting', {
     defaultValue: false
   }
 }, {
-  tableName: 'Meeting',
+  tableName: 'meeting',
   timestamps: true,
 });
 

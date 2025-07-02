@@ -67,7 +67,8 @@ const Lead = db.define('Lead',{
 
 {
     timestamps:true, //add the created date and updated date
-    underscored: true //enables snake case
+      tableName: 'lead',
+
 })
 
 module.exports = Lead

@@ -21,7 +21,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'ProductCategory',
+  tableName: 'product_category',
   timestamps: true,
 });
 module.exports = ProductCategory

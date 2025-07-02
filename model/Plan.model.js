@@ -21,7 +21,7 @@ const Plan = db.define('Plan', {
     defaultValue: false
   }
 }, {
-  tableName: 'plans',
+  tableName: 'plan',
   timestamps: true
 });
 

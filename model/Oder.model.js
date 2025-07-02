@@ -20,7 +20,7 @@ const Order = db.define('Order', {
     defaultValue: false
   }
 }, {
-  tableName: 'orders',
+  tableName: 'order',
   timestamps: true 
 });
 

@@ -49,7 +49,7 @@ const Contact = db.define('Contact',{
 
 },{
     timestamps:true, //add the created date and updated date
-    underscored: true //enables snake case
+  tableName: 'contact',
 })
 
 module.exports = Contact

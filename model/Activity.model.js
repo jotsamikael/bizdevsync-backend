@@ -49,7 +49,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'Activity',
+  tableName: 'activity',
   timestamps: true,
 });
 

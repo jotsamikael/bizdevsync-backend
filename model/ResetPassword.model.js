@@ -14,7 +14,7 @@ is_archived: {
   defaultValue: false
 }
 }, {
-  tableName: 'password_resets',
+  tableName: 'password_reset',
   timestamps: true
 });
 
