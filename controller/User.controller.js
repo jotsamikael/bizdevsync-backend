@@ -249,13 +249,18 @@ exports.signin = async (req, res, next) => {
 
 
     //create a cookie, token will be send through cookie
-    res
+    /*res
       .cookie("access_token", token, {
         httpOnly: true,
         secure: false, //is true for https
         sameSite: "strict", //protect against CSRF attackes
         maxAge: 24 * 60 * 60 * 1000, //24h on milliseconds
-      })
+      })*/
+     res.cookie("access_token", token, {
+  httpOnly: true,
+  secure: true,            // ✅ Required for HTTPS
+  sameSite: 'None',        // ✅ Required to allow cross-site cookies
+  maxAge: 24 * 60 * 60 * 1000})
       .status(200)
       .json(userData);
       //logger.info(`Login success for user with email ${req.body.email}`);
