@@ -67,7 +67,7 @@ const Lead = db.define('Lead',{
 
 {
     timestamps:true, //add the created date and updated date
-      tableName: 'lead',
+      tableName: 'leads',
 
 })
 

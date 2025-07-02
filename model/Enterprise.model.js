@@ -17,7 +17,7 @@ const Enterprise = db.define('Enterprise', {
   expires_at: { type: DataTypes.DATE, allowNull: true },
   is_archived: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
 }, {
-  tableName: 'enterprise',
+  tableName: 'enterprises',
   timestamps: true
 });
 

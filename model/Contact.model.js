@@ -49,7 +49,7 @@ const Contact = db.define('Contact',{
 
 },{
     timestamps:true, //add the created date and updated date
-  tableName: 'contact',
+  tableName: 'contacts',
 })
 
 module.exports = Contact

@@ -17,7 +17,7 @@ const db = require('../config/db')
     defaultValue: false
   }
 }, {
-  tableName: 'region',
+  tableName: 'regions',
   timestamps: true,
 });
 
