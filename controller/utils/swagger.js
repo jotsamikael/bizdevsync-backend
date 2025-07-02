@@ -27,7 +27,7 @@ const options = {
         description: 'Local ENV.'
       },
       {
-        url: 'https://your-production-url.com/api',
+        url: 'https://bizdevsync-backend.onrender.com/api',
         description: 'Production ENV.'
       }
     ],

@@ -208,18 +208,18 @@ exports.activateAccount = async (req, res, next) => {
  *                     $ref: '#/components/schemas/User'
  */
 exports.signin = async (req, res, next) => {
-      logger.info(`Login start for user with email ${req.body.email}`);
+      //logger.info(`Login start for user with email ${req.body.email}`);
   try {
     //get user by email
     const user = await User.findOne({ where: { email: req.body.email } });
 
     if (!user){
-      logger.error(`Login Failed. No for user with email ${req.body.email} Found`);
+      //logger.error(`Login Failed. No for user with email ${req.body.email} Found`);
       return next(createError(404, "User doesn't exist"));
 
     } 
     if(user.is_activated == false){
-      logger.error(`Login Failed for user with email ${req.body.emai} User Account not activated`);
+      //logger.error(`Login Failed for user with email ${req.body.emai} User Account not activated`);
 
       return next(createError(404, "User Account not activated"));
     } 
@@ -232,7 +232,7 @@ exports.signin = async (req, res, next) => {
     );
 
     if (!comparePassword){
-      logger.error(`Login Failed for user with email ${req.body.emai}. Wrong password`);
+      //logger.error(`Login Failed for user with email ${req.body.emai}. Wrong password`);
 
       return next(createError(400, "Wrong password"));
     } 
@@ -258,10 +258,10 @@ exports.signin = async (req, res, next) => {
       })
       .status(200)
       .json(userData);
-      logger.info(`Login success for user with email ${req.body.email}`);
+      //logger.info(`Login success for user with email ${req.body.email}`);
 
   } catch (error) {
-      logger.error(`Login Failed for user with email ${email}. Unexpected error during signin`);
+      //logger.error(`Login Failed for user with email ${req.body.email}. Unexpected error during signin`);
 
     next(createError(500, "Error occured during signin", error.message));
   }
