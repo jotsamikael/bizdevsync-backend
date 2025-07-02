@@ -12,7 +12,7 @@ const cors = require('cors');
 const app = express();
 // Enable CORS for all routes
 app.use(cors({
-  origin: ['http://localhost:4200','https://bizdevsync-ggg2rb4w2-jotsamikaels-projects.vercel.app/'], // your Angular app origin
+  origin: ['http://localhost:4200','https://bizdevsync-ggg2rb4w2-jotsamikaels-projects.vercel.app'], // your Angular app origin
   credentials: true                // allow sending cookies
 }));
 
